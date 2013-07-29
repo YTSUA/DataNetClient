@@ -118,7 +118,6 @@
     <Compile Include="MetroBillCommands.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DbSelector.cs" />
     <Compile Include="Forms\StartControl.cs">
       <SubType>UserControl</SubType>
     </Compile>

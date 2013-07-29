@@ -11,56 +11,56 @@ namespace DataNetClient
 {
     class DataCollector
     {
-        const string STAUS_READY = "Ready";
-        const string STAUS_WORKING = "Please wait. Working. ";
-        int MaxBarsLookBack = 3000;
+        const string StausReady = "Ready";
+        const string StausWorking = "Please wait. Working. ";
+        int _maxBarsLookBack = 3000;
 
-        readonly DbSelector dbSel;
-        readonly Logger logger;
-        Semaphore aSemaphoreHolidays;
-        Semaphore aSemaphoreSessions;
-        Semaphore aSemaphoreWait;
+        //readonly DbSelector dbSel;
+        readonly Logger _logger;
+        Semaphore _aSemaphoreHolidays;
+        Semaphore _aSemaphoreSessions;
+        Semaphore _aSemaphoreWait;
         //Semaphore SemaphoreEndOfCollecting;
 
-        string aTableType;
-        int aIntradayPeriod;
-        eHistoricalPeriod aHistoricalPeriod;
-        string aContinuationType;
+        string _aTableType;
+        int _aIntradayPeriod;
+        eHistoricalPeriod _aHistoricalPeriod;
+        string _aContinuationType;
 
-        readonly Dictionary<string, SymbolState> aSymbolStates = new Dictionary<string, SymbolState>();
+        readonly Dictionary<string, SymbolState> _aSymbolStates = new Dictionary<string, SymbolState>();
         public struct SymbolState
         {
-            public bool isCollected;
-            public bool isSuccess;
+            public bool IsCollected;
+            public bool IsSuccess;
         }
         enum SessionStates { OpenedHoliday, OpenedNormal, ClosedHoliday, ClosedNormal, Missed }
         public struct MissedStr
         {
-            public DateTime start;
-            public DateTime end;
+            public DateTime Start;
+            public DateTime End;
         }
         //*** UI
 
-        DevComponents.DotNetBar.LabelItem aL_status;
-        ListBox aLB_symbols;
-        CheckedListBox aCB_lists;
-        DevComponents.DotNetBar.ProgressBarItem aPB_state;
-        ListView aLV_report;
+        DevComponents.DotNetBar.LabelItem _aLStatus;
+        ListBox _aLbSymbols;
+        CheckedListBox _aCbLists;
+        DevComponents.DotNetBar.ProgressBarItem _aPbState;
+        ListView _aLvReport;
         //**
 
         public DataCollector(Logger log)
         {
-            dbSel = DbSelector.GetInstance();
-            logger = log;            
+            //dbSel = DbSelector.GetInstance();
+            _logger = log;            
         }
 
-        public void Subscribe(DevComponents.DotNetBar.LabelItem _L_status, ListBox _LB_symbols, CheckedListBox _CB_lists, DevComponents.DotNetBar.ProgressBarItem _PB_state, ListView _LV_report)
+        public void Subscribe(DevComponents.DotNetBar.LabelItem lStatus, ListBox lbSymbols, CheckedListBox cbLists, DevComponents.DotNetBar.ProgressBarItem pbState, ListView lvReport)
         {
-            aL_status = _L_status;
-            aLB_symbols = _LB_symbols;
-            aCB_lists = _CB_lists;
-            aPB_state = _PB_state;
-            aLV_report = _LV_report;
+            _aLStatus = lStatus;
+            _aLbSymbols = lbSymbols;
+            _aCbLists = cbLists;
+            _aPbState = pbState;
+            _aLvReport = lvReport;
         }
 
         #region Sessions & Holidays /////////////////////////////////////////////////////////////////////////////////////////////
@@ -72,23 +72,23 @@ namespace DataNetClient
                 foreach (CQGSession session in sessions)
                 {
                     SessionData one = new SessionData();
-                    one.startTime = session.StartTime;
-                    one.endTime = session.EndTime;
-                    one.dayOfWeek = session.WorkingWeekDays;
-                    one.symbol = symbol;
+                    one.StartTime = session.StartTime;
+                    one.EndTime = session.EndTime;
+                    one.DayOfWeek = session.WorkingWeekDays;
+                    one.Symbol = symbol;
                     one.DayStartsYesterday = session.DayStartsYesterday;
-                    listSession.Add(one);
+                    _listSession.Add(one);
 
-                    dbSel.AddToSessionTable(symbol, symbol, session.StartTime, session.EndTime, "Open",
+                    ClientDataManager.AddToSessionTable(symbol, symbol, session.StartTime, session.EndTime, "Open",
                         GetSessionWorkingDays(session.WorkingWeekDays), session.DayStartsYesterday, session.PrimaryFlag, session.Number, DateTime.Now);
                 }
             }
             catch (Exception ex)
             {
-                logger.LogAdd("SessionAdd. " + ex.Message, Category.Error);
+                _logger.LogAdd("SessionAdd. " + ex.Message, Category.Error);
             }
 
-            aSemaphoreSessions.Release();      
+            _aSemaphoreSessions.Release();      
         }
 
         public void HolidaysAdd(CQGSessionsCollection sessions, string symbol)
@@ -99,7 +99,7 @@ namespace DataNetClient
                 {
                     foreach (CQGHoliday holiday in session.Holidays)
                     {
-                        dbSel.AddToSessionTable(symbol, symbol, holiday.HolidayDate, holiday.HolidayDate, "Holiday", "", false, false, 0, DateTime.Now);
+                        ClientDataManager.AddToSessionTable(symbol, symbol, holiday.HolidayDate, holiday.HolidayDate, "Holiday", "", false, false, 0, DateTime.Now);
                     }
 
                 }
@@ -107,28 +107,26 @@ namespace DataNetClient
             }
             catch (Exception ex)
             {
-                logger.LogAdd("HolidaysAdd. " + ex.Message, Category.Error);
+                _logger.LogAdd("HolidaysAdd. " + ex.Message, Category.Error);
             }
 
-            aSemaphoreHolidays.Release();
+            _aSemaphoreHolidays.Release();
         }
 
         public struct SessionData
         {
-            public string symbol;
-            public DateTime startTime;
-            public DateTime endTime;
-            public eSessionWeekDays dayOfWeek;
+            public string Symbol;
+            public DateTime StartTime;
+            public DateTime EndTime;
+            public eSessionWeekDays DayOfWeek;
             public bool DayStartsYesterday;
         }
 
-        private List<SessionData> listSession = new List<SessionData>();
+        private readonly List<SessionData> _listSession = new List<SessionData>();
 
         private string GetSessionWorkingDays(eSessionWeekDays weekDay)
         {
-            string sResult;
-
-            sResult = (((weekDay & eSessionWeekDays.swdSunday) == eSessionWeekDays.swdSunday) ? "S" : "-").ToString();
+            string sResult = (((weekDay & eSessionWeekDays.swdSunday) == eSessionWeekDays.swdSunday) ? "S" : "-").ToString();
             sResult += (((weekDay & eSessionWeekDays.swdMonday) == eSessionWeekDays.swdMonday) ? "M" : "-").ToString();
             sResult += (((weekDay & eSessionWeekDays.swdTuesday) == eSessionWeekDays.swdTuesday) ? "T" : "-").ToString();
             sResult += (((weekDay & eSessionWeekDays.swdWednesday) == eSessionWeekDays.swdWednesday) ? "W" : "-").ToString();
@@ -145,15 +143,15 @@ namespace DataNetClient
 
         public void BarRequest(CQGCEL CEL,List<string> symbols, int rangeStart, int rangeEnd, int sessionFilter, string historicalPeriod, string continuationType)
         {
-            aSymbolStates.Clear();
-            aContinuationType = continuationType;
-            aHistoricalPeriod = eHistoricalPeriod.hpUndefined;
+            _aSymbolStates.Clear();
+            _aContinuationType = continuationType;
+            _aHistoricalPeriod = eHistoricalPeriod.hpUndefined;
             TableType(historicalPeriod);
 
             foreach (string smb in symbols)
             {                
 
-                dbSel.CreateBarsTable(smb, aTableType);
+                ClientDataManager.CreateBarsTable(smb, _aTableType);
 
                 CQGTimedBarsRequest request = CEL.CreateTimedBarsRequest();
                 //LineTime = CEL.Environment.LineTime;
@@ -162,20 +160,18 @@ namespace DataNetClient
                 request.RangeEnd = rangeEnd;
                 request.SessionsFilter = sessionFilter;
                 request.Symbol = smb;
-                request.IntradayPeriod = aIntradayPeriod;
-                if (aHistoricalPeriod!=eHistoricalPeriod.hpUndefined)
-                    request.HistoricalPeriod = aHistoricalPeriod;
+                request.IntradayPeriod = _aIntradayPeriod;
+                if (_aHistoricalPeriod!=eHistoricalPeriod.hpUndefined)
+                    request.HistoricalPeriod = _aHistoricalPeriod;
                                                                
                 var bars = CEL.RequestTimedBars(request);
                 var curTimedBars = CEL.AllTimedBars.get_ItemById(bars.Id);
 
                 if (curTimedBars.Status == eRequestStatus.rsInProgress)
                 {
-                    var ss = new SymbolState();
-                   
-                    ss.isCollected = false;
-                    ss.isSuccess = false;
-                    aSymbolStates.Add(smb, ss);
+                    var ss = new SymbolState {IsCollected = false, IsSuccess = false};
+
+                    _aSymbolStates.Add(smb, ss);
                 }    
             }            
 
@@ -188,11 +184,11 @@ namespace DataNetClient
             {
                 if (cqgError != null && cqgError.Code != 0)
                 {
-                    logger.LogAdd("Invalid symbol: " + m_CurTimedBars.Request.Symbol, Category.Warning);
-                    SymbolState ss = aSymbolStates[m_CurTimedBars.Request.Symbol];
-                    ss.isCollected = true;
-                    ss.isSuccess = false;
-                    aSymbolStates[m_CurTimedBars.Request.Symbol] = ss;
+                    _logger.LogAdd("Invalid symbol: " + m_CurTimedBars.Request.Symbol, Category.Warning);
+                    SymbolState ss = _aSymbolStates[m_CurTimedBars.Request.Symbol];
+                    ss.IsCollected = true;
+                    ss.IsSuccess = false;
+                    _aSymbolStates[m_CurTimedBars.Request.Symbol] = ss;
                     UpdateUI();
                 }
                 else
@@ -204,25 +200,25 @@ namespace DataNetClient
                         {
                             for (int i = m_CurTimedBars.Count - 1; i >= 0; i--)
                             {
-                                AddBar(m_CurTimedBars[i], (long)(i + 1), m_CurTimedBars.Request.Symbol, runDateTime, aTableType);
+                                AddBar(m_CurTimedBars[i], (long)(i + 1), m_CurTimedBars.Request.Symbol, runDateTime, _aTableType);
                             }
                         }
-                        dbSel.CommitQueue();
+                        ClientDataManager.CommitQueue();
                     }// else      
              
-                    logger.LogAdd("Collecting finished for symbol: " + m_CurTimedBars.Request.Symbol, Category.Information);
-                    dbSel.COMMIT();
+                    _logger.LogAdd("Collecting finished for symbol: " + m_CurTimedBars.Request.Symbol, Category.Information);
+                    //dbSel.COMMIT();
 
-                    SymbolState ss = aSymbolStates[m_CurTimedBars.Request.Symbol];
-                    ss.isCollected = true;
-                    ss.isSuccess = true;
-                    aSymbolStates[m_CurTimedBars.Request.Symbol] = ss;
+                    SymbolState ss = _aSymbolStates[m_CurTimedBars.Request.Symbol];
+                    ss.IsCollected = true;
+                    ss.IsSuccess = true;
+                    _aSymbolStates[m_CurTimedBars.Request.Symbol] = ss;
                     UpdateUI();
                 }
             }
             catch (Exception exception)
             {
-                logger.LogAdd("BarsAdd. " + exception, Category.Error);
+                _logger.LogAdd("BarsAdd. " + exception, Category.Error);
             }            
         }        
 
@@ -231,7 +227,7 @@ namespace DataNetClient
             try
             {
                 long num;
-                string SQL = "";
+                var sql = "";
                 string str5 = symbol.Trim();
                 string[] str = str5.Split('.');
                 str5 = str[str.Length - 1];
@@ -266,18 +262,18 @@ namespace DataNetClient
                             GetValueAsString(timedBar.Timestamp) + "," +
                             GetValueAsString(timedBar.Timestamp) + ",'" +
                             runDateTime.ToShortDateString() + "','" +
-                            aContinuationType + "'";                
+                            _aContinuationType + "'";                
 
-                SQL = "INSERT IGNORE INTO t_candle_" + str5 + "_" + tType + " (cdSymbol, cdOpen, cdHigh, cdLow, cdClose, cdTickVolume,cdActualVolume,cdAskVol,cdAvg,cdBidVol,cdHLC3,cdMid,cdOpenInterest," +
+                sql = "INSERT IGNORE INTO t_candle_" + str5 + "_" + tType + " (cdSymbol, cdOpen, cdHigh, cdLow, cdClose, cdTickVolume,cdActualVolume,cdAskVol,cdAvg,cdBidVol,cdHLC3,cdMid,cdOpenInterest," +
                     "cdRange,cdTrueHigh,cdTrueLow,cdTrueRange,cdTimeInterval, cdDT ,cddatenum, cdSystemDT,cn_type) VALUES (" + str3 + ");";
 
                 //dbSel.DumpRecord_DBS(SQL);
                 //todo: dbSel.DumpRecord_DBS(SQL);
-                dbSel.AddSQLToQueueWithOutCommit(SQL);
+                ClientDataManager.AddToQueue(sql);
             }
             catch (Exception exception)
             {
-                logger.LogAdd("AddBar. " + exception, Category.Error);
+                _logger.LogAdd("AddBar. " + exception, Category.Error);
             }
         }
 
@@ -302,7 +298,7 @@ namespace DataNetClient
             }
             catch (Exception)
             {
-                logger.LogAdd("GetValueAsString", Category.Error);                
+                _logger.LogAdd("GetValueAsString", Category.Error);                
                 return "0";
             }
         }
@@ -314,8 +310,8 @@ namespace DataNetClient
         internal void TickRequest(CQGCEL CEL, List<string> symbols, DateTime rangeStart, DateTime rangeEnd, string continuationType)
         {
             CQGTicks _ticks;
-            aSymbolStates.Clear();
-            aContinuationType = continuationType;                        
+            _aSymbolStates.Clear();
+            _aContinuationType = continuationType;                        
 
             foreach (string smb in symbols)
             {
@@ -332,9 +328,9 @@ namespace DataNetClient
                 {
                     SymbolState ss = new SymbolState();
 
-                    ss.isCollected = false;
-                    ss.isSuccess = false;
-                    aSymbolStates.Add(smb, ss);
+                    ss.IsCollected = false;
+                    ss.IsSuccess = false;
+                    _aSymbolStates.Add(smb, ss);
                 }
             }            
             UpdateUI();
@@ -347,17 +343,17 @@ namespace DataNetClient
                 if (cqgError != null && cqgError.Code != 0)
                 {
                     
-                   logger.LogAdd("Invalid symbol or bad time range: " + cqg_ticks.Request.Symbol, Category.Warning); 
+                   _logger.LogAdd("Invalid symbol or bad time range: " + cqg_ticks.Request.Symbol, Category.Warning); 
 
-                    SymbolState ss = aSymbolStates[cqg_ticks.Request.Symbol];
-                    ss.isCollected = true;
-                    ss.isSuccess = false;
-                    aSymbolStates[cqg_ticks.Request.Symbol] = ss;
+                    SymbolState ss = _aSymbolStates[cqg_ticks.Request.Symbol];
+                    ss.IsCollected = true;
+                    ss.IsSuccess = false;
+                    _aSymbolStates[cqg_ticks.Request.Symbol] = ss;
                     UpdateUI();
                 }
                 else
                 {
-                    dbSel.CreateTickTable(cqg_ticks.Request.Symbol);
+                    ClientDataManager.CreateTickTable(cqg_ticks.Request.Symbol);
 
                     
                     DateTime runDateTime = DateTime.Now;
@@ -371,13 +367,13 @@ namespace DataNetClient
                         }
                         
                     }
-                    dbSel.CommitQueue();
-                    dbSel.COMMIT();
+                    ClientDataManager.CommitQueue();
+                    //dbSel.COMMIT();
 
-                    SymbolState ss = aSymbolStates[cqg_ticks.Request.Symbol];
-                    ss.isCollected = true;
-                    ss.isSuccess = true;
-                    aSymbolStates[cqg_ticks.Request.Symbol] = ss;
+                    SymbolState ss = _aSymbolStates[cqg_ticks.Request.Symbol];
+                    ss.IsCollected = true;
+                    ss.IsSuccess = true;
+                    _aSymbolStates[cqg_ticks.Request.Symbol] = ss;
                     UpdateUI();
                 }
 
@@ -385,7 +381,7 @@ namespace DataNetClient
             }
             catch (Exception exception)
             {
-                logger.LogAdd("TicksAdd. " + exception, Category.Error);
+                _logger.LogAdd("TicksAdd. " + exception, Category.Error);
             }
         }
 
@@ -393,8 +389,8 @@ namespace DataNetClient
         {
             try{                                
     
-                string[] str = symbol.Trim().Split('.');
-                String query = "INSERT IGNORE INTO t_tick_" + str[str.Length - 1];
+                var str = symbol.Trim().Split('.');
+                var query = "INSERT IGNORE INTO t_tick_" + str[str.Length - 1];
                 query += "(Symbol, Price, Volume, TickTime, CollectTime, ContinuationType, PriceType, GroupID) VALUES";
                 query += "('";
                 query += symbol + "',";
@@ -402,15 +398,15 @@ namespace DataNetClient
                 query += GetValueAsString(tick.Volume) + ",";
                 query += GetValueAsString(tick.Timestamp) + ",";
                 query += GetValueAsString(runDateTime) + ",";
-                query += "'" + aContinuationType + "',";
+                query += "'" + _aContinuationType + "',";
                 query += "'" + tick.PriceType.ToString() + "',";
                 query += GetValueAsString(groupId) + ");";
 
-                dbSel.AddSQLToQueueWithOutCommit(query);
+                ClientDataManager.AddToQueue(query);
             }
             catch (Exception exception)
             {
-                logger.LogAdd("AddTick. " + exception, Category.Error);
+                _logger.LogAdd("AddTick. " + exception, Category.Error);
             }
         }
         #endregion /////////////////////////////////////////////////////////////////////////////////////////////
@@ -427,10 +423,10 @@ namespace DataNetClient
 
         internal void MissingBarRequest(CQGCEL CEL, string[] symbols,  int maxCount, bool isAuto = false)
         {            
-            MaxBarsLookBack = Math.Abs(maxCount);
-            aSymbolStates.Clear();
-            dbSel.CreateMissingBarExceptionTable();
-            dbSel.CreateSessionHolidayTimesTable();
+            _maxBarsLookBack = Math.Abs(maxCount);
+            _aSymbolStates.Clear();
+            ClientDataManager.CreateMissingBarExceptionTable();
+            ClientDataManager.CreateSessionHolidayTimesTable();
 
             SemaphoreGettingSessionData = new Semaphore(0, 1);
             List<string> aList = new List<string>();
@@ -450,10 +446,10 @@ namespace DataNetClient
             {
                 SymbolState ss = new SymbolState();
 
-                ss.isCollected = false;
-                ss.isSuccess = false;
-                if (!aSymbolStates.ContainsKey(smb))
-                    aSymbolStates.Add(smb, ss);    
+                ss.IsCollected = false;
+                ss.IsSuccess = false;
+                if (!_aSymbolStates.ContainsKey(smb))
+                    _aSymbolStates.Add(smb, ss);    
                 //TODO ggg
             }
 
@@ -476,7 +472,7 @@ namespace DataNetClient
                 Thread.CurrentThread.Name = "AsyncCheckingMissedBarsThread";
                 SemaphoreGettingSessionData.WaitOne();
                 if (isAuto)
-                    StartAsyncCheckingMissedBarsAuto(symbols, MaxBarsLookBack);
+                    StartAsyncCheckingMissedBarsAuto(symbols, _maxBarsLookBack);
                 else
                     StartAsyncCheckingMissedBars(symbols);
             }).Start();
@@ -489,10 +485,10 @@ namespace DataNetClient
             for (int i = 0; i < symbols.Length; i++)
             {
                 string symbol = symbols[i];
-                aSemaphoreHolidays = new Semaphore(0, 1);
-                aSemaphoreSessions = new Semaphore(0, 1);
+                _aSemaphoreHolidays = new Semaphore(0, 1);
+                _aSemaphoreSessions = new Semaphore(0, 1);
 
-                List<DateTime> aResultDateTimes = dbSel.getAllDateTimes(dbSel.getTableFromSymbol(symbol));
+                List<DateTime> aResultDateTimes = ClientDataManager.GetAllDateTimes(ClientDataManager.GetTableFromSymbol(symbol));
 
                 if (aResultDateTimes==null || aResultDateTimes.Count == 0)
                     continue;                
@@ -510,44 +506,44 @@ namespace DataNetClient
                 req.RangeEnd = RangeEnd;
 
                 CEL.RequestHistoricalSessions(req);
-                aSemaphoreHolidays.WaitOne(20000);// wait
+                _aSemaphoreHolidays.WaitOne(20000);// wait
 
 
                 CEL.NewInstrument(symbol);
-                aSemaphoreSessions.WaitOne(20000);// wait
+                _aSemaphoreSessions.WaitOne(20000);// wait
             }
         }
 
         private void StartAsyncCheckingMissedBars(string[] symbols)
         {
-            dbSel.COMMIT();
+            //dbSel.COMMIT();
             
             for (int sInd = 0; sInd < symbols.Length; sInd++)
             {
                 
                 string currentSymbol = symbols[sInd];
                 
-                dbSel.DelFromReport(currentSymbol);
+                ClientDataManager.DelFromReport(currentSymbol);
 
                 List<DateTime> aResultDates=new List<DateTime>();
                 List<DateTime> aResultDateTimes = new List<DateTime>();
 
-                if (dbSel.TableExists(dbSel.getTableFromSymbol(currentSymbol)))
+                if (ClientDataManager.TableExists(ClientDataManager.GetTableFromSymbol(currentSymbol)))
                 {
-                    aResultDates = dbSel.getAllDates(dbSel.getTableFromSymbol(currentSymbol));
-                    aResultDateTimes = dbSel.getAllDateTimes(dbSel.getTableFromSymbol(currentSymbol));
+                    aResultDates = ClientDataManager.GetAllDates(ClientDataManager.GetTableFromSymbol(currentSymbol));
+                    aResultDateTimes = ClientDataManager.GetAllDateTimes(ClientDataManager.GetTableFromSymbol(currentSymbol));
 
                 }
                 if (aResultDates==null||aResultDates.Count == 0)
                 {
-                    SymbolState ss = aSymbolStates[currentSymbol];
-                    ss.isCollected = true;
-                    ss.isSuccess = true;
-                    aSymbolStates[currentSymbol] = ss;
+                    SymbolState ss = _aSymbolStates[currentSymbol];
+                    ss.IsCollected = true;
+                    ss.IsSuccess = true;
+                    _aSymbolStates[currentSymbol] = ss;
 
                     UpdateUI();
 
-                    logger.LogAdd("No records in database for symbol: " + currentSymbol , Category.Warning);                    
+                    _logger.LogAdd("No records in database for symbol: " + currentSymbol , Category.Warning);                    
                     continue;
                 }
                 DateTime refresh = DateTime.Now;
@@ -574,13 +570,13 @@ namespace DataNetClient
                     {
                         bool DayStartsYesterday = false;
                         var State = SessionStates.OpenedNormal;
-                        if (dbSel.HolidaysContains(dbSel.getTableFromSymbol(currentSymbol), curDT))
+                        if (ClientDataManager.HolidaysContains(ClientDataManager.GetTableFromSymbol(currentSymbol), curDT))
                         {
                             State = SessionStates.ClosedHoliday;
                         }
 
-                        DateTime sTime = curDT.Date.Add(GetStartTime(currentSymbol, listSession, curDT.DayOfWeek, out DayStartsYesterday).TimeOfDay);
-                        DateTime eTime = curDT.Date.Add(GetEndTime(currentSymbol, listSession, curDT.DayOfWeek).TimeOfDay);
+                        DateTime sTime = curDT.Date.Add(GetStartTime(currentSymbol, _listSession, curDT.DayOfWeek, out DayStartsYesterday).TimeOfDay);
+                        DateTime eTime = curDT.Date.Add(GetEndTime(currentSymbol, _listSession, curDT.DayOfWeek).TimeOfDay);
                         // DayStartsYesterday
                         if (sTime.TimeOfDay >= eTime.TimeOfDay)
                         {
@@ -606,7 +602,7 @@ namespace DataNetClient
                         if (State == SessionStates.ClosedHoliday)
                         {
 
-                            if (aResultDateTimes.Where(a => a.Date == curDT.Date).Count() > 0)
+                            if (aResultDateTimes.Exists(a => a.Date == curDT.Date))
                             {
                                 State = SessionStates.OpenedHoliday;
                             }
@@ -654,7 +650,7 @@ namespace DataNetClient
 
                         aItems.Add(LVitem);
                         
-                        dbSel.AddToReport(currentSymbol, curDT, State.ToString(), sTime.DayOfWeek.ToString(), sTime, eTime.DayOfWeek.ToString(), eTime);
+                        ClientDataManager.AddToReport(currentSymbol, curDT, State.ToString(), sTime.DayOfWeek.ToString(), sTime, eTime.DayOfWeek.ToString(), eTime);
 
                         if (State == SessionStates.OpenedHoliday || State == SessionStates.OpenedNormal)
                         {
@@ -672,17 +668,17 @@ namespace DataNetClient
                                 LVitem = new ListViewItem();
                                 LVitem.Group = LVgroup;
                                 LVitem.ForeColor = Color.DarkRed;
-                                LVitem.Text = item.start.ToShortDateString();                                                    // Date                                
+                                LVitem.Text = item.Start.ToShortDateString();                                                    // Date                                
                                 LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, State.ToString()));            // state
                                 //LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, item.start.DayOfWeek.ToString()));  // Day
 
-                                LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, item.start.DayOfWeek.ToString()));  // Day
-                                LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, item.start.ToString("dd.MM HH:mm")));//  start
-                                LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, item.end.DayOfWeek.ToString()));  // Day
-                                LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, item.end.ToString("dd.MM HH:mm")));  // end
+                                LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, item.Start.DayOfWeek.ToString()));  // Day
+                                LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, item.Start.ToString("dd.MM HH:mm")));//  start
+                                LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, item.End.DayOfWeek.ToString()));  // Day
+                                LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, item.End.ToString("dd.MM HH:mm")));  // end
                                 aItems.Add(LVitem);
                                 
-                                dbSel.AddToReport(currentSymbol, item.start, State.ToString(), item.start.DayOfWeek.ToString(), item.start, item.end.DayOfWeek.ToString(), item.end);
+                                ClientDataManager.AddToReport(currentSymbol, item.Start, State.ToString(), item.Start.DayOfWeek.ToString(), item.Start, item.End.DayOfWeek.ToString(), item.End);
                             }
                         }
                     }//end:for curDT
@@ -690,9 +686,9 @@ namespace DataNetClient
 
                 // SECOND PART: Finding Missed bar that now is not missing
                                
-                List<DateTime> aMissedBarsForSymbol = dbSel.getMissedBarsForSymbol(currentSymbol);
+                IEnumerable<DateTime> aMissedBarsForSymbol = ClientDataManager.GetMissedBarsForSymbol(currentSymbol);
 
-                int index = Math.Max(0, aResultDateTimes.Count - MaxBarsLookBack);
+                int index = Math.Max(0, aResultDateTimes.Count - _maxBarsLookBack);
                 DateTime first = aResultDateTimes[index];
 
                 List<DateTime> aSmallMissedBarsForSymbol = aMissedBarsForSymbol.Where(a => a > first).ToList();
@@ -703,29 +699,29 @@ namespace DataNetClient
                     if (aResultDateTimes.Contains(missedItem))
                     {
                         //TODO Without commit update
-                        dbSel.ChangeBarStatusInMissingTableWithOutCommit(currentSymbol, refresh, missedItem);
+                        ClientDataManager.ChangeBarStatusInMissingTableWithOutCommit(currentSymbol, refresh, missedItem);
                     }
                 }
 
-                dbSel.CommitQueue();
+                ClientDataManager.CommitQueue();
 
-                SymbolState ss1 = aSymbolStates[currentSymbol];
-                ss1.isCollected = true;
-                ss1.isSuccess = true;
-                aSymbolStates[currentSymbol] = ss1;
-                logger.LogAdd("Repost finished for symbol: " + currentSymbol, Category.Information);                
+                SymbolState ss1 = _aSymbolStates[currentSymbol];
+                ss1.IsCollected = true;
+                ss1.IsSuccess = true;
+                _aSymbolStates[currentSymbol] = ss1;
+                _logger.LogAdd("Repost finished for symbol: " + currentSymbol, Category.Information);                
 
                 UpdateUI();    
 
             }// end: for all symbols  
-            dbSel.COMMIT();
+            //dbSel.COMMIT();
             ResetSymbols();
             // todo of all
         }
 
         private void StartAsyncCheckingMissedBarsAuto(string[] symbols, int maxCount)
         {
-            dbSel.COMMIT();
+            //dbSel.COMMIT();
 
             for (int sInd = 0; sInd < symbols.Length; sInd++)
             {
@@ -735,26 +731,26 @@ namespace DataNetClient
                 List<DateTime> aResultDates = new List<DateTime>();
                 List<DateTime> aResultDateTimes = new List<DateTime>();
 
-                if (dbSel.TableExists(dbSel.getTableFromSymbol(currentSymbol)))
+                if (ClientDataManager.TableExists(ClientDataManager.GetTableFromSymbol(currentSymbol)))
                 {
-                    
-                    aResultDateTimes = dbSel.getAllDateTimes(dbSel.getTableFromSymbol(currentSymbol), maxCount+1);
 
-                    aResultDates = dbSel.getAllDates(dbSel.getTableFromSymbol(currentSymbol),maxCount+1);
+                    aResultDateTimes = ClientDataManager.GetAllDateTimes(ClientDataManager.GetTableFromSymbol(currentSymbol), maxCount + 1);
 
-                    dbSel.DelFromReport(currentSymbol, aResultDateTimes.First());
+                    aResultDates = ClientDataManager.GetAllDates(ClientDataManager.GetTableFromSymbol(currentSymbol), maxCount + 1);
+
+                    ClientDataManager.DelFromReport(currentSymbol, aResultDateTimes.First());
 
                 }
                 if (aResultDates == null || aResultDates.Count == 0)
                 {
-                    SymbolState ss = aSymbolStates[currentSymbol];
-                    ss.isCollected = true;
-                    ss.isSuccess = true;
-                    aSymbolStates[currentSymbol] = ss;
+                    SymbolState ss = _aSymbolStates[currentSymbol];
+                    ss.IsCollected = true;
+                    ss.IsSuccess = true;
+                    _aSymbolStates[currentSymbol] = ss;
 
                     UpdateUI();
 
-                    logger.LogAdd("No records in database for symbol: " + currentSymbol, Category.Warning);
+                    _logger.LogAdd("No records in database for symbol: " + currentSymbol, Category.Warning);
                     continue;
                 }
                 DateTime refresh = DateTime.Now;
@@ -780,13 +776,13 @@ namespace DataNetClient
                     aGroups.Add(LVgroup);
 
                     #region Get old report data
-                    var res = dbSel.GetReport(currentSymbol);
+                    var res = ClientDataManager.GetReport(currentSymbol);
                     foreach (var reportItem in res)
                     {
                         LVitem = new ListViewItem();
                         LVitem.Group = LVgroup;
 
-                        switch (reportItem.state)
+                        switch (reportItem.State)
                         {
                             case "OpenedNormal":
                                 LVitem.ForeColor = Color.DarkGreen;
@@ -805,14 +801,14 @@ namespace DataNetClient
                                 break;
                         }
                         
-                        LVitem.Text = reportItem.curDate.ToShortDateString();                                                    // Date                                
-                        LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, reportItem.state.ToString()));            // state
+                        LVitem.Text = reportItem.CurDate.ToShortDateString();                                                    // Date                                
+                        LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, reportItem.State.ToString()));            // state
                         //LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, curDT.DayOfWeek.ToString()));  // Day
 
-                        LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, reportItem.sTime.DayOfWeek.ToString()));  // Day
-                        LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, reportItem.sTime.ToString("dd.MM HH:mm")));     //  start
-                        LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, reportItem.eTime.DayOfWeek.ToString()));  // Day
-                        LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, reportItem.eTime.ToString("dd.MM HH:mm")));     // end
+                        LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, reportItem.STime.DayOfWeek.ToString()));  // Day
+                        LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, reportItem.STime.ToString("dd.MM HH:mm")));     //  start
+                        LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, reportItem.ETime.DayOfWeek.ToString()));  // Day
+                        LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, reportItem.ETime.ToString("dd.MM HH:mm")));     // end
 
                         aItems.Add(LVitem);
                     }
@@ -825,13 +821,13 @@ namespace DataNetClient
 
                         bool DayStartsYesterday = false;
                         SessionStates State = SessionStates.OpenedNormal;
-                        if (dbSel.HolidaysContains(dbSel.getTableFromSymbol(currentSymbol), curDT))
+                        if (ClientDataManager.HolidaysContains(ClientDataManager.GetTableFromSymbol(currentSymbol), curDT))
                         {
                             State = SessionStates.ClosedHoliday;
                         }
 
-                        DateTime sTime = curDT.Date.Add(GetStartTime(currentSymbol, listSession, curDT.DayOfWeek, out DayStartsYesterday).TimeOfDay);
-                        DateTime eTime = curDT.Date.Add(GetEndTime(currentSymbol, listSession, curDT.DayOfWeek).TimeOfDay);
+                        DateTime sTime = curDT.Date.Add(GetStartTime(currentSymbol, _listSession, curDT.DayOfWeek, out DayStartsYesterday).TimeOfDay);
+                        DateTime eTime = curDT.Date.Add(GetEndTime(currentSymbol, _listSession, curDT.DayOfWeek).TimeOfDay);
                         // DayStartsYesterday
                         if (sTime.TimeOfDay >= eTime.TimeOfDay)
                         {
@@ -908,8 +904,8 @@ namespace DataNetClient
                         LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, eTime.ToString("dd.MM HH:mm")));     // end
 
                         aItems.Add(LVitem);
-                        
-                        dbSel.AddToReport(currentSymbol, curDT, State.ToString(), sTime.DayOfWeek.ToString(), sTime, eTime.DayOfWeek.ToString(), eTime);
+
+                        ClientDataManager.AddToReport(currentSymbol, curDT, State.ToString(), sTime.DayOfWeek.ToString(), sTime, eTime.DayOfWeek.ToString(), eTime);
 
                         #endregion 
 
@@ -930,17 +926,17 @@ namespace DataNetClient
                                 LVitem = new ListViewItem();
                                 LVitem.Group = LVgroup;
                                 LVitem.ForeColor = Color.DarkRed;
-                                LVitem.Text = item.start.ToShortDateString();                                                    // Date                                
+                                LVitem.Text = item.Start.ToShortDateString();                                                    // Date                                
                                 LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, State.ToString()));            // state
                                 //LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, item.start.DayOfWeek.ToString()));  // Day
 
-                                LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, item.start.DayOfWeek.ToString()));  // Day
-                                LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, item.start.ToString("dd.MM HH:mm")));//  start
-                                LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, item.end.DayOfWeek.ToString()));  // Day
-                                LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, item.end.ToString("dd.MM HH:mm")));  // end
+                                LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, item.Start.DayOfWeek.ToString()));  // Day
+                                LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, item.Start.ToString("dd.MM HH:mm")));//  start
+                                LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, item.End.DayOfWeek.ToString()));  // Day
+                                LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, item.End.ToString("dd.MM HH:mm")));  // end
                                 aItems.Add(LVitem);
-                                
-                                    dbSel.AddToReport(currentSymbol, item.start, State.ToString(), item.start.DayOfWeek.ToString(), item.start, item.end.DayOfWeek.ToString(), item.end);
+
+                                ClientDataManager.AddToReport(currentSymbol, item.Start, State.ToString(), item.Start.DayOfWeek.ToString(), item.Start, item.End.DayOfWeek.ToString(), item.End);
                             }
                         }
                         #endregion
@@ -950,35 +946,33 @@ namespace DataNetClient
 
                 // SECOND PART: Finding Missed bar that now is not missing
 
-                List<DateTime> aMissedBarsForSymbol = dbSel.getMissedBarsForSymbol(currentSymbol);
+                var aMissedBarsForSymbol =  ClientDataManager.GetMissedBarsForSymbol(currentSymbol);
 
-                int index = Math.Max(0, aResultDateTimes.Count - MaxBarsLookBack);
+                int index = Math.Max(0, aResultDateTimes.Count - _maxBarsLookBack);
                 DateTime first = aResultDateTimes[index];
 
                 List<DateTime> aSmallMissedBarsForSymbol = aMissedBarsForSymbol.Where(a => a > first).ToList();
 
                 foreach (DateTime missedItem in aSmallMissedBarsForSymbol)
-                {
-                    //if (dbSel.rowExists(dbSel.getTableFromSymbol(currentSymbol), missedItem))
+                {                    
                     if (aResultDateTimes.Contains(missedItem))
                     {
                         //TODO Without commit update
-                        dbSel.ChangeBarStatusInMissingTableWithOutCommit(currentSymbol, refresh, missedItem);
+                        ClientDataManager.ChangeBarStatusInMissingTableWithOutCommit(currentSymbol, refresh, missedItem);
                     }
                 }
 
-                dbSel.CommitQueue();
+                ClientDataManager.CommitQueue();
 
-                SymbolState ss1 = aSymbolStates[currentSymbol];
-                ss1.isCollected = true;
-                ss1.isSuccess = true;
-                aSymbolStates[currentSymbol] = ss1;
-                logger.LogAdd("Repost finished for symbol: " + currentSymbol, Category.Information);
+                SymbolState ss1 = _aSymbolStates[currentSymbol];
+                ss1.IsCollected = true;
+                ss1.IsSuccess = true;
+                _aSymbolStates[currentSymbol] = ss1;
+                _logger.LogAdd("Repost finished for symbol: " + currentSymbol, Category.Information);
 
                 UpdateUI();
 
-            }// end: for all symbols  
-            dbSel.COMMIT();
+            }// end: for all symbols              
             ResetSymbols();
             // todo of all
         }
@@ -998,17 +992,17 @@ namespace DataNetClient
                 if (!ExistsTime(aResultDateTimes, curTime) && curTime > aResultDateTimes[0])
                 {
                     
-                        dbSel.AddToMissingTableWithOutCommit(smb, refresh, curTime);
+                        ClientDataManager.AddToMissingTableWithOutCommit(smb, refresh, curTime);
                     
                     missingList.Add(curTime);
                 }
             }
 
-            dbSel.CommitQueue();
+            ClientDataManager.CommitQueue();
             
             if (missingList.Count == 1)
             {
-                resultList.Add(new MissedStr { start = missingList[0], end = missingList[0] });
+                resultList.Add(new MissedStr { Start = missingList[0], End = missingList[0] });
             }
             if (missingList.Count > 1)
             {
@@ -1034,12 +1028,12 @@ namespace DataNetClient
                         }
                     }
 
-                    resultList.Add(new MissedStr { start = first, end = last });
+                    resultList.Add(new MissedStr { Start = first, End = last });
 
                     last = first = item;
                     if (haveLast)
                     {
-                        resultList.Add(new MissedStr { start = first, end = last });
+                        resultList.Add(new MissedStr { Start = first, End = last });
                     }
                 }
             }
@@ -1049,14 +1043,7 @@ namespace DataNetClient
 
         private bool ExistsTime(List<DateTime> aResultDateTimes, DateTime curTime)
         {
-            foreach (var item in aResultDateTimes)
-            {
-                if (item == curTime)
-                {
-                    return true;
-                }
-            }
-            return false;
+            return aResultDateTimes.Any(item => item == curTime);
         }
 
         private DateTime GetStartTime(string smb, List<SessionData> listSession, DayOfWeek dayOfWeek, out bool DayStartsYesterday)
@@ -1064,13 +1051,13 @@ namespace DataNetClient
             List<SessionData> alist = new List<SessionData>();
             eSessionWeekDays curDay = ConvertToSessionWeekDay(dayOfWeek);
 
-            alist = listSession.Where(a => a.symbol == smb).ToList();
+            alist = listSession.Where(a => a.Symbol == smb).ToList();
             foreach (var item in alist)
             {
-                if ((item.dayOfWeek & curDay) == curDay)
+                if ((item.DayOfWeek & curDay) == curDay)
                 {
                     DayStartsYesterday = item.DayStartsYesterday;
-                    return item.startTime;
+                    return item.StartTime;
                 }
             }
             DayStartsYesterday = false;
@@ -1082,13 +1069,13 @@ namespace DataNetClient
             List<SessionData> alist = new List<SessionData>();
             eSessionWeekDays curDay = ConvertToSessionWeekDay(dayOfWeek);
 
-            alist = listSession.Where(a => a.symbol == smb).ToList();
+            alist = listSession.Where(a => a.Symbol == smb).ToList();
             DateTime res = DateTime.Today;
             foreach (var item in alist)
             {
-                if ((item.dayOfWeek & curDay) == curDay)
+                if ((item.DayOfWeek & curDay) == curDay)
                 {
-                    res =  item.endTime;
+                    res =  item.EndTime;
                 }
             }
             return res;
@@ -1134,70 +1121,70 @@ namespace DataNetClient
             switch (tableTypeFull)
             {
                 case "1 minute":
-                    aIntradayPeriod = 1;
-                    aTableType = "1m";
+                    _aIntradayPeriod = 1;
+                    _aTableType = "1m";
                     break;
                 case "2 minutes":
-                    aIntradayPeriod = 2;
-                    aTableType = "2m";
+                    _aIntradayPeriod = 2;
+                    _aTableType = "2m";
                     break;
                 case "3 minutes":
-                    aIntradayPeriod = 3;
-                    aTableType = "3m";
+                    _aIntradayPeriod = 3;
+                    _aTableType = "3m";
                     break;
                 case "5 minutes":
-                    aIntradayPeriod = 5;
-                    aTableType = "5m";
+                    _aIntradayPeriod = 5;
+                    _aTableType = "5m";
                     break;
                 case "10 minute":
-                    aIntradayPeriod = 10;
-                    aTableType = "10m";
+                    _aIntradayPeriod = 10;
+                    _aTableType = "10m";
                     break;
                 case "15 minutes":
-                    aIntradayPeriod = 15;
-                    aTableType = "15m";
+                    _aIntradayPeriod = 15;
+                    _aTableType = "15m";
                     break;
                 case "30 minutes":
-                    aIntradayPeriod = 30;
-                    aTableType = "30m";
+                    _aIntradayPeriod = 30;
+                    _aTableType = "30m";
                     break;
                 case "60 minutes":
-                    aIntradayPeriod = 60;
-                    aTableType = "60m";
+                    _aIntradayPeriod = 60;
+                    _aTableType = "60m";
                     break;
                 case "240 minutes":
-                    aIntradayPeriod = 240;
-                    aTableType = "240m";
+                    _aIntradayPeriod = 240;
+                    _aTableType = "240m";
                     break;
 
                 case "Daily":
-                    aHistoricalPeriod = eHistoricalPeriod.hpDaily;
-                    aTableType = "Daily";
+                    _aHistoricalPeriod = eHistoricalPeriod.hpDaily;
+                    _aTableType = "Daily";
                     break;
                 case "Weekly":
-                    aHistoricalPeriod = eHistoricalPeriod.hpWeekly;
-                    aTableType = "Weekly";
+                    _aHistoricalPeriod = eHistoricalPeriod.hpWeekly;
+                    _aTableType = "Weekly";
                     break;
                 case "Monthly":
-                    aHistoricalPeriod = eHistoricalPeriod.hpMonthly;
-                    aTableType = "Monthly";
+                    _aHistoricalPeriod = eHistoricalPeriod.hpMonthly;
+                    _aTableType = "Monthly";
                     break;
                 case "Quarterly":
-                    aHistoricalPeriod = eHistoricalPeriod.hpQuarterly;
-                    aTableType = "Quarterly";
+                    _aHistoricalPeriod = eHistoricalPeriod.hpQuarterly;
+                    _aTableType = "Quarterly";
                     break;
                 case "Yearly":
-                    aHistoricalPeriod = eHistoricalPeriod.hpYearly;
-                    aTableType = "Yearly";
+                    _aHistoricalPeriod = eHistoricalPeriod.hpYearly;
+                    _aTableType = "Yearly";
                     break;
                 case "Semiannual":
-                    aHistoricalPeriod = eHistoricalPeriod.hpSemiannual;
-                    aTableType = "Semiannual";
+                    _aHistoricalPeriod = eHistoricalPeriod.hpSemiannual;
+                    _aTableType = "Semiannual";
                     break;
 
                 default:
-                    aIntradayPeriod = 1;
-                    aTableType = "1m";
+                    _aIntradayPeriod = 1;
+                    _aTableType = "1m";
                     break;
             }
         }
@@ -1205,45 +1192,45 @@ namespace DataNetClient
         internal void UpdateUI()
         {
 
-            if (aPB_state != null)
+            if (_aPbState != null)
             {
-                aPB_state.Invoke((Action)delegate
+                _aPbState.Invoke((Action)delegate
                 {
-                    aPB_state.Maximum = aSymbolStates.Count;
-                    aPB_state.Value = SymbolsCollected;
+                    _aPbState.Maximum = _aSymbolStates.Count;
+                    _aPbState.Value = SymbolsCollected;
                 });
             }
 
-            if (aLV_report != null)
+            if (_aLvReport != null)
             {
-                aLV_report.Invoke((Action)delegate
+                _aLvReport.Invoke((Action)delegate
                 {
-                    if (SymbolsCollected < aSymbolStates.Count)
+                    if (SymbolsCollected < _aSymbolStates.Count)
                     {
-                        aLV_report.Items.Clear();
-                        aLV_report.Groups.Clear();
+                        _aLvReport.Items.Clear();
+                        _aLvReport.Groups.Clear();
                     }
                     else
                     {
-                        aLV_report.Groups.AddRange(aGroups.ToArray());
-                        aLV_report.Items.AddRange(aItems.ToArray());
+                        _aLvReport.Groups.AddRange(aGroups.ToArray());
+                        _aLvReport.Items.AddRange(aItems.ToArray());
                     }
                 });
                 
             }
-            if (aL_status != null)
+            if (_aLStatus != null)
             {
-                aL_status.Invoke((Action)delegate
+                _aLStatus.Invoke((Action)delegate
                 {
-                    if (SymbolsCollected < aSymbolStates.Count)
-                        aL_status.Text = STAUS_WORKING + "[" + SymbolsCollected + "/" + aSymbolStates.Count + "]";
+                    if (SymbolsCollected < _aSymbolStates.Count)
+                        _aLStatus.Text = StausWorking + "[" + SymbolsCollected + "/" + _aSymbolStates.Count + "]";
                     else
                     {
-                        aL_status.Text = STAUS_READY;
+                        _aLStatus.Text = StausReady;
                         try
                         {
                             //if (SemaphoreEndOfCollecting != null) SemaphoreEndOfCollecting.Release();
-                            if (aSemaphoreWait != null) aSemaphoreWait.Release();
+                            if (_aSemaphoreWait != null) _aSemaphoreWait.Release();
                         }
                         catch (Exception) { }
                     }
@@ -1256,9 +1243,9 @@ namespace DataNetClient
             get
             {
                 int collectedCount = 0;
-                foreach (var item in aSymbolStates)
+                foreach (var item in _aSymbolStates)
                 {
-                    if (item.Value.isCollected) collectedCount++;
+                    if (item.Value.IsCollected) collectedCount++;
                 }
                 return collectedCount;
             }
@@ -1266,33 +1253,33 @@ namespace DataNetClient
 
         internal void WaitEndOfOperation()
         {            
-            if (SymbolsCollected < aSymbolStates.Count)
+            if (SymbolsCollected < _aSymbolStates.Count)
             {
-                if (aSemaphoreWait == null) 
-                    aSemaphoreWait = new Semaphore(0, 1);
-                aSemaphoreWait.WaitOne();
+                if (_aSemaphoreWait == null) 
+                    _aSemaphoreWait = new Semaphore(0, 1);
+                _aSemaphoreWait.WaitOne();
             }            
         }
 
         internal Brush getColor(string symbol)
         {
-            if (aSymbolStates.ContainsKey(symbol) && aSymbolStates[symbol].isCollected)
+            if (_aSymbolStates.ContainsKey(symbol) && _aSymbolStates[symbol].IsCollected)
             {
-                return aSymbolStates[symbol].isSuccess ? Brushes.LightGreen : Brushes.Red;
+                return _aSymbolStates[symbol].IsSuccess ? Brushes.LightGreen : Brushes.Red;
             }
             return Brushes.Black;
         }
 
         internal void ResetSymbols()
         {            
-            aSymbolStates.Clear();
+            _aSymbolStates.Clear();
         }
 
         #endregion
 
         internal bool IsBusy()
         {
-            return SymbolsCollected < aSymbolStates.Count;
+            return SymbolsCollected < _aSymbolStates.Count;
         }
     }
 }

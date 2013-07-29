@@ -34,6 +34,22 @@
             System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("14/12/12", System.Windows.Forms.HorizontalAlignment.Left);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.metroShell1 = new DevComponents.DotNetBar.Metro.MetroShell();
+            this.metroTabPanel3 = new DevComponents.DotNetBar.Metro.MetroTabPanel();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.listBoxTablesName = new System.Windows.Forms.ListBox();
+            this.contextMenuStripTables = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
+            this.listViewResult = new System.Windows.Forms.ListView();
+            this.columnHeaderDate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeaderState = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeaderStartDay = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeaderStart = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeaderEndDay = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeaderEnd = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.metroTilePanel1 = new DevComponents.DotNetBar.Metro.MetroTilePanel();
+            this.metroTileItemMissingBar = new DevComponents.DotNetBar.Metro.MetroTileItem();
             this.metroTabPanel1 = new DevComponents.DotNetBar.Metro.MetroTabPanel();
             this.panelEx5 = new DevComponents.DotNetBar.PanelEx();
             this.ui_LabelX_sharedAvaliable = new DevComponents.DotNetBar.LabelX();
@@ -52,22 +68,6 @@
             this.textBoxX2 = new DevComponents.DotNetBar.Controls.TextBoxX();
             this.labelX1 = new DevComponents.DotNetBar.LabelX();
             this.textBoxX1 = new DevComponents.DotNetBar.Controls.TextBoxX();
-            this.metroTabPanel3 = new DevComponents.DotNetBar.Metro.MetroTabPanel();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.listBoxTablesName = new System.Windows.Forms.ListBox();
-            this.contextMenuStripTables = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
-            this.listViewResult = new System.Windows.Forms.ListView();
-            this.columnHeaderDate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeaderState = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeaderStartDay = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeaderStart = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeaderEndDay = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeaderEnd = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.metroTilePanel1 = new DevComponents.DotNetBar.Metro.MetroTilePanel();
-            this.metroTileItemMissingBar = new DevComponents.DotNetBar.Metro.MetroTileItem();
             this.metroTabPanel2 = new DevComponents.DotNetBar.Metro.MetroTabPanel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panelEx3 = new DevComponents.DotNetBar.PanelEx();
@@ -134,19 +134,19 @@
             this.deleteListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.styleManager1 = new DevComponents.DotNetBar.StyleManager(this.components);
             this.metroStatusBar1 = new DevComponents.DotNetBar.Metro.MetroStatusBar();
-            this.labelItem1 = new DevComponents.DotNetBar.LabelItem();
+            this.ui__status_labelItem_status = new DevComponents.DotNetBar.LabelItem();
             this.ui_status_labelItemStatusSB = new DevComponents.DotNetBar.LabelItem();
             this.labelItemStatusCQG = new DevComponents.DotNetBar.LabelItem();
             this.progressBarItemCollecting = new DevComponents.DotNetBar.ProgressBarItem();
             this.labelItem2 = new DevComponents.DotNetBar.LabelItem();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.metroShell1.SuspendLayout();
-            this.metroTabPanel1.SuspendLayout();
-            this.panelEx5.SuspendLayout();
-            this.panelEx1.SuspendLayout();
             this.metroTabPanel3.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.contextMenuStripTables.SuspendLayout();
+            this.metroTabPanel1.SuspendLayout();
+            this.panelEx5.SuspendLayout();
+            this.panelEx1.SuspendLayout();
             this.metroTabPanel2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.panelEx3.SuspendLayout();
@@ -176,8 +176,8 @@
             this.metroShell1.CanCustomize = false;
             this.metroShell1.CaptionVisible = true;
             this.metroShell1.Controls.Add(this.metroTabPanel3);
-            this.metroShell1.Controls.Add(this.metroTabPanel1);
             this.metroShell1.Controls.Add(this.metroTabPanel2);
+            this.metroShell1.Controls.Add(this.metroTabPanel1);
             this.metroShell1.Controls.Add(this.metroTabPanel4);
             this.metroShell1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.metroShell1.ForeColor = System.Drawing.Color.Black;
@@ -212,6 +212,196 @@
             this.metroShell1.Text = "Shell";
             this.metroShell1.SettingsButtonClick += new System.EventHandler(this.metroShell1_SettingsButtonClick);
             this.metroShell1.HelpButtonClick += new System.EventHandler(this.metroShell1_LogOutButtonClick);
+            // 
+            // metroTabPanel3
+            // 
+            this.metroTabPanel3.ColorSchemeStyle = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
+            this.metroTabPanel3.Controls.Add(this.tableLayoutPanel2);
+            this.metroTabPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.metroTabPanel3.Location = new System.Drawing.Point(0, 51);
+            this.metroTabPanel3.Name = "metroTabPanel3";
+            this.metroTabPanel3.Padding = new System.Windows.Forms.Padding(3, 0, 3, 3);
+            this.metroTabPanel3.Size = new System.Drawing.Size(879, 407);
+            // 
+            // 
+            // 
+            this.metroTabPanel3.Style.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+            // 
+            // 
+            // 
+            this.metroTabPanel3.StyleMouseDown.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+            // 
+            // 
+            // 
+            this.metroTabPanel3.StyleMouseOver.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+            this.metroTabPanel3.TabIndex = 3;
+            // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(211)))), ((int)(((byte)(211)))), ((int)(((byte)(211)))));
+            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 250F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.Controls.Add(this.listBoxTablesName, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.listViewResult, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.metroTilePanel1, 0, 1);
+            this.tableLayoutPanel2.ForeColor = System.Drawing.Color.Black;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 2;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 155F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(873, 383);
+            this.tableLayoutPanel2.TabIndex = 0;
+            // 
+            // listBoxTablesName
+            // 
+            this.listBoxTablesName.BackColor = System.Drawing.Color.White;
+            this.listBoxTablesName.ContextMenuStrip = this.contextMenuStripTables;
+            this.listBoxTablesName.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listBoxTablesName.ForeColor = System.Drawing.Color.Black;
+            this.listBoxTablesName.FormattingEnabled = true;
+            this.listBoxTablesName.Location = new System.Drawing.Point(3, 3);
+            this.listBoxTablesName.Name = "listBoxTablesName";
+            this.listBoxTablesName.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple;
+            this.listBoxTablesName.Size = new System.Drawing.Size(244, 222);
+            this.listBoxTablesName.TabIndex = 36;
+            // 
+            // contextMenuStripTables
+            // 
+            this.contextMenuStripTables.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem2,
+            this.toolStripMenuItem3,
+            this.toolStripMenuItem5});
+            this.contextMenuStripTables.Name = "contextMenuStrip1";
+            this.contextMenuStripTables.Size = new System.Drawing.Size(158, 70);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(157, 22);
+            this.toolStripMenuItem2.Text = "Select all";
+            this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
+            // 
+            // toolStripMenuItem3
+            // 
+            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(157, 22);
+            this.toolStripMenuItem3.Text = "Unselect all";
+            this.toolStripMenuItem3.Click += new System.EventHandler(this.toolStripMenuItem3_Click);
+            // 
+            // toolStripMenuItem5
+            // 
+            this.toolStripMenuItem5.Name = "toolStripMenuItem5";
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(157, 22);
+            this.toolStripMenuItem5.Text = "Inverse selected";
+            this.toolStripMenuItem5.Click += new System.EventHandler(this.toolStripMenuItem5_Click);
+            // 
+            // listViewResult
+            // 
+            this.listViewResult.BackColor = System.Drawing.Color.White;
+            this.listViewResult.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeaderDate,
+            this.columnHeaderState,
+            this.columnHeaderStartDay,
+            this.columnHeaderStart,
+            this.columnHeaderEndDay,
+            this.columnHeaderEnd});
+            this.listViewResult.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewResult.ForeColor = System.Drawing.Color.Black;
+            listViewGroup1.Header = "10/12/2013";
+            listViewGroup1.Name = "listViewGroup1";
+            listViewGroup2.Header = "13/12/12";
+            listViewGroup2.Name = "listViewGroup2";
+            listViewGroup3.Header = "14/12/12";
+            listViewGroup3.Name = "listViewGroup3";
+            this.listViewResult.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
+            listViewGroup1,
+            listViewGroup2,
+            listViewGroup3});
+            this.listViewResult.Location = new System.Drawing.Point(253, 3);
+            this.listViewResult.Name = "listViewResult";
+            this.tableLayoutPanel2.SetRowSpan(this.listViewResult, 2);
+            this.listViewResult.Size = new System.Drawing.Size(617, 377);
+            this.listViewResult.TabIndex = 2;
+            this.listViewResult.UseCompatibleStateImageBehavior = false;
+            this.listViewResult.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeaderDate
+            // 
+            this.columnHeaderDate.Text = "Date";
+            this.columnHeaderDate.Width = 96;
+            // 
+            // columnHeaderState
+            // 
+            this.columnHeaderState.Text = "State";
+            this.columnHeaderState.Width = 95;
+            // 
+            // columnHeaderStartDay
+            // 
+            this.columnHeaderStartDay.Text = "Start Day";
+            this.columnHeaderStartDay.Width = 85;
+            // 
+            // columnHeaderStart
+            // 
+            this.columnHeaderStart.Text = "Start Time";
+            this.columnHeaderStart.Width = 88;
+            // 
+            // columnHeaderEndDay
+            // 
+            this.columnHeaderEndDay.Text = "End Day";
+            this.columnHeaderEndDay.Width = 85;
+            // 
+            // columnHeaderEnd
+            // 
+            this.columnHeaderEnd.Text = "End Time";
+            this.columnHeaderEnd.Width = 83;
+            // 
+            // metroTilePanel1
+            // 
+            this.metroTilePanel1.BackColor = System.Drawing.Color.White;
+            // 
+            // 
+            // 
+            this.metroTilePanel1.BackgroundStyle.Class = "MetroTilePanel";
+            this.metroTilePanel1.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+            this.metroTilePanel1.ContainerControlProcessDialogKey = true;
+            this.metroTilePanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.metroTilePanel1.ForeColor = System.Drawing.Color.Black;
+            this.metroTilePanel1.Items.AddRange(new DevComponents.DotNetBar.BaseItem[] {
+            this.metroTileItemMissingBar});
+            this.metroTilePanel1.LicenseKey = "F962CEC7-CD8F-4911-A9E9-CAB39962FC1F";
+            this.metroTilePanel1.Location = new System.Drawing.Point(4, 232);
+            this.metroTilePanel1.Margin = new System.Windows.Forms.Padding(4);
+            this.metroTilePanel1.Name = "metroTilePanel1";
+            this.metroTilePanel1.Size = new System.Drawing.Size(242, 147);
+            this.metroTilePanel1.TabIndex = 33;
+            this.metroTilePanel1.Text = "s";
+            // 
+            // metroTileItemMissingBar
+            // 
+            this.metroTileItemMissingBar.Image = global::DataNetClient.Properties.Resources.Charts;
+            this.metroTileItemMissingBar.Name = "metroTileItemMissingBar";
+            this.metroTileItemMissingBar.SymbolColor = System.Drawing.Color.Empty;
+            this.metroTileItemMissingBar.Text = "<font size=\"+4\">Start analyzing<br/>symbol data</font>";
+            this.metroTileItemMissingBar.TileColor = DevComponents.DotNetBar.Metro.eMetroTileColor.Default;
+            // 
+            // 
+            // 
+            this.metroTileItemMissingBar.TileStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(132)))));
+            this.metroTileItemMissingBar.TileStyle.BackColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(65)))), ((int)(((byte)(66)))));
+            this.metroTileItemMissingBar.TileStyle.BackColorGradientAngle = 45;
+            this.metroTileItemMissingBar.TileStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+            this.metroTileItemMissingBar.TileStyle.PaddingBottom = 4;
+            this.metroTileItemMissingBar.TileStyle.PaddingLeft = 4;
+            this.metroTileItemMissingBar.TileStyle.PaddingRight = 4;
+            this.metroTileItemMissingBar.TileStyle.PaddingTop = 4;
+            this.metroTileItemMissingBar.TileStyle.TextColor = System.Drawing.Color.White;
+            this.metroTileItemMissingBar.TitleText = "Analyzing";
+            this.metroTileItemMissingBar.Click += new System.EventHandler(this.metroTileItem1_Click);
             // 
             // metroTabPanel1
             // 
@@ -516,196 +706,6 @@
             this.textBoxX1.TabIndex = 0;
             this.textBoxX1.Text = "localhost";
             // 
-            // metroTabPanel3
-            // 
-            this.metroTabPanel3.ColorSchemeStyle = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
-            this.metroTabPanel3.Controls.Add(this.tableLayoutPanel2);
-            this.metroTabPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.metroTabPanel3.Location = new System.Drawing.Point(0, 51);
-            this.metroTabPanel3.Name = "metroTabPanel3";
-            this.metroTabPanel3.Padding = new System.Windows.Forms.Padding(3, 0, 3, 3);
-            this.metroTabPanel3.Size = new System.Drawing.Size(879, 407);
-            // 
-            // 
-            // 
-            this.metroTabPanel3.Style.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-            // 
-            // 
-            // 
-            this.metroTabPanel3.StyleMouseDown.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-            // 
-            // 
-            // 
-            this.metroTabPanel3.StyleMouseOver.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-            this.metroTabPanel3.TabIndex = 3;
-            // 
-            // tableLayoutPanel2
-            // 
-            this.tableLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(211)))), ((int)(((byte)(211)))), ((int)(((byte)(211)))));
-            this.tableLayoutPanel2.ColumnCount = 2;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 250F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Controls.Add(this.listBoxTablesName, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.listViewResult, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.metroTilePanel1, 0, 1);
-            this.tableLayoutPanel2.ForeColor = System.Drawing.Color.Black;
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 3);
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 2;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 155F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(873, 383);
-            this.tableLayoutPanel2.TabIndex = 0;
-            // 
-            // listBoxTablesName
-            // 
-            this.listBoxTablesName.BackColor = System.Drawing.Color.White;
-            this.listBoxTablesName.ContextMenuStrip = this.contextMenuStripTables;
-            this.listBoxTablesName.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listBoxTablesName.ForeColor = System.Drawing.Color.Black;
-            this.listBoxTablesName.FormattingEnabled = true;
-            this.listBoxTablesName.Location = new System.Drawing.Point(3, 3);
-            this.listBoxTablesName.Name = "listBoxTablesName";
-            this.listBoxTablesName.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple;
-            this.listBoxTablesName.Size = new System.Drawing.Size(244, 222);
-            this.listBoxTablesName.TabIndex = 36;
-            // 
-            // contextMenuStripTables
-            // 
-            this.contextMenuStripTables.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem2,
-            this.toolStripMenuItem3,
-            this.toolStripMenuItem5});
-            this.contextMenuStripTables.Name = "contextMenuStrip1";
-            this.contextMenuStripTables.Size = new System.Drawing.Size(158, 70);
-            // 
-            // toolStripMenuItem2
-            // 
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(157, 22);
-            this.toolStripMenuItem2.Text = "Select all";
-            this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
-            // 
-            // toolStripMenuItem3
-            // 
-            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(157, 22);
-            this.toolStripMenuItem3.Text = "Unselect all";
-            this.toolStripMenuItem3.Click += new System.EventHandler(this.toolStripMenuItem3_Click);
-            // 
-            // toolStripMenuItem5
-            // 
-            this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(157, 22);
-            this.toolStripMenuItem5.Text = "Inverse selected";
-            this.toolStripMenuItem5.Click += new System.EventHandler(this.toolStripMenuItem5_Click);
-            // 
-            // listViewResult
-            // 
-            this.listViewResult.BackColor = System.Drawing.Color.White;
-            this.listViewResult.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeaderDate,
-            this.columnHeaderState,
-            this.columnHeaderStartDay,
-            this.columnHeaderStart,
-            this.columnHeaderEndDay,
-            this.columnHeaderEnd});
-            this.listViewResult.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listViewResult.ForeColor = System.Drawing.Color.Black;
-            listViewGroup1.Header = "10/12/2013";
-            listViewGroup1.Name = "listViewGroup1";
-            listViewGroup2.Header = "13/12/12";
-            listViewGroup2.Name = "listViewGroup2";
-            listViewGroup3.Header = "14/12/12";
-            listViewGroup3.Name = "listViewGroup3";
-            this.listViewResult.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
-            listViewGroup1,
-            listViewGroup2,
-            listViewGroup3});
-            this.listViewResult.Location = new System.Drawing.Point(253, 3);
-            this.listViewResult.Name = "listViewResult";
-            this.tableLayoutPanel2.SetRowSpan(this.listViewResult, 2);
-            this.listViewResult.Size = new System.Drawing.Size(617, 377);
-            this.listViewResult.TabIndex = 2;
-            this.listViewResult.UseCompatibleStateImageBehavior = false;
-            this.listViewResult.View = System.Windows.Forms.View.Details;
-            // 
-            // columnHeaderDate
-            // 
-            this.columnHeaderDate.Text = "Date";
-            this.columnHeaderDate.Width = 96;
-            // 
-            // columnHeaderState
-            // 
-            this.columnHeaderState.Text = "State";
-            this.columnHeaderState.Width = 95;
-            // 
-            // columnHeaderStartDay
-            // 
-            this.columnHeaderStartDay.Text = "Start Day";
-            this.columnHeaderStartDay.Width = 85;
-            // 
-            // columnHeaderStart
-            // 
-            this.columnHeaderStart.Text = "Start Time";
-            this.columnHeaderStart.Width = 88;
-            // 
-            // columnHeaderEndDay
-            // 
-            this.columnHeaderEndDay.Text = "End Day";
-            this.columnHeaderEndDay.Width = 85;
-            // 
-            // columnHeaderEnd
-            // 
-            this.columnHeaderEnd.Text = "End Time";
-            this.columnHeaderEnd.Width = 83;
-            // 
-            // metroTilePanel1
-            // 
-            this.metroTilePanel1.BackColor = System.Drawing.Color.White;
-            // 
-            // 
-            // 
-            this.metroTilePanel1.BackgroundStyle.Class = "MetroTilePanel";
-            this.metroTilePanel1.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-            this.metroTilePanel1.ContainerControlProcessDialogKey = true;
-            this.metroTilePanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.metroTilePanel1.ForeColor = System.Drawing.Color.Black;
-            this.metroTilePanel1.Items.AddRange(new DevComponents.DotNetBar.BaseItem[] {
-            this.metroTileItemMissingBar});
-            this.metroTilePanel1.LicenseKey = "F962CEC7-CD8F-4911-A9E9-CAB39962FC1F";
-            this.metroTilePanel1.Location = new System.Drawing.Point(4, 232);
-            this.metroTilePanel1.Margin = new System.Windows.Forms.Padding(4);
-            this.metroTilePanel1.Name = "metroTilePanel1";
-            this.metroTilePanel1.Size = new System.Drawing.Size(242, 147);
-            this.metroTilePanel1.TabIndex = 33;
-            this.metroTilePanel1.Text = "s";
-            // 
-            // metroTileItemMissingBar
-            // 
-            this.metroTileItemMissingBar.Image = global::DataNetClient.Properties.Resources.Charts;
-            this.metroTileItemMissingBar.Name = "metroTileItemMissingBar";
-            this.metroTileItemMissingBar.SymbolColor = System.Drawing.Color.Empty;
-            this.metroTileItemMissingBar.Text = "<font size=\"+4\">Start analyzing<br/>symbol data</font>";
-            this.metroTileItemMissingBar.TileColor = DevComponents.DotNetBar.Metro.eMetroTileColor.Default;
-            // 
-            // 
-            // 
-            this.metroTileItemMissingBar.TileStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(130)))), ((int)(((byte)(132)))));
-            this.metroTileItemMissingBar.TileStyle.BackColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(65)))), ((int)(((byte)(66)))));
-            this.metroTileItemMissingBar.TileStyle.BackColorGradientAngle = 45;
-            this.metroTileItemMissingBar.TileStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-            this.metroTileItemMissingBar.TileStyle.PaddingBottom = 4;
-            this.metroTileItemMissingBar.TileStyle.PaddingLeft = 4;
-            this.metroTileItemMissingBar.TileStyle.PaddingRight = 4;
-            this.metroTileItemMissingBar.TileStyle.PaddingTop = 4;
-            this.metroTileItemMissingBar.TileStyle.TextColor = System.Drawing.Color.White;
-            this.metroTileItemMissingBar.TitleText = "Analyzing";
-            this.metroTileItemMissingBar.Click += new System.EventHandler(this.metroTileItem1_Click);
-            // 
             // metroTabPanel2
             // 
             this.metroTabPanel2.ColorSchemeStyle = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
@@ -759,9 +759,9 @@
             this.panelEx3.Controls.Add(this.checkedListBoxLists);
             this.panelEx3.Controls.Add(this.labelX7);
             this.panelEx3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelEx3.Location = new System.Drawing.Point(3, 3);
+            this.panelEx3.Location = new System.Drawing.Point(649, 3);
             this.panelEx3.Name = "panelEx3";
-            this.panelEx3.Size = new System.Drawing.Size(220, 377);
+            this.panelEx3.Size = new System.Drawing.Size(221, 377);
             this.panelEx3.Style.Alignment = System.Drawing.StringAlignment.Center;
             this.panelEx3.Style.BackColor1.Color = System.Drawing.Color.White;
             this.panelEx3.Style.Border = DevComponents.DotNetBar.eBorderType.SingleLine;
@@ -781,7 +781,7 @@
             this.checkedListBoxLists.FormattingEnabled = true;
             this.checkedListBoxLists.Location = new System.Drawing.Point(10, 51);
             this.checkedListBoxLists.Name = "checkedListBoxLists";
-            this.checkedListBoxLists.Size = new System.Drawing.Size(192, 323);
+            this.checkedListBoxLists.Size = new System.Drawing.Size(193, 323);
             this.checkedListBoxLists.TabIndex = 22;
             this.checkedListBoxLists.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listBoxLists_MouseDown);
             this.checkedListBoxLists.MouseMove += new System.Windows.Forms.MouseEventHandler(this.listBoxSymbols_MouseMove);
@@ -1310,9 +1310,9 @@
             this.panelEx2.Controls.Add(this.labelX6);
             this.panelEx2.Controls.Add(this.listBoxSymbols);
             this.panelEx2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelEx2.Location = new System.Drawing.Point(649, 3);
+            this.panelEx2.Location = new System.Drawing.Point(3, 3);
             this.panelEx2.Name = "panelEx2";
-            this.panelEx2.Size = new System.Drawing.Size(221, 377);
+            this.panelEx2.Size = new System.Drawing.Size(220, 377);
             this.panelEx2.Style.Alignment = System.Drawing.StringAlignment.Center;
             this.panelEx2.Style.BackColor1.Color = System.Drawing.Color.White;
             this.panelEx2.Style.Border = DevComponents.DotNetBar.eBorderType.SingleLine;
@@ -1349,7 +1349,7 @@
             this.listBoxSymbols.Location = new System.Drawing.Point(10, 51);
             this.listBoxSymbols.Name = "listBoxSymbols";
             this.listBoxSymbols.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.listBoxSymbols.Size = new System.Drawing.Size(196, 325);
+            this.listBoxSymbols.Size = new System.Drawing.Size(195, 325);
             this.listBoxSymbols.TabIndex = 21;
             this.listBoxSymbols.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listBox1_DrawItem);
             this.listBoxSymbols.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listBoxSymbols_MouseDown);
@@ -1617,7 +1617,7 @@
             this.metroStatusBar1.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.metroStatusBar1.ForeColor = System.Drawing.Color.Black;
             this.metroStatusBar1.Items.AddRange(new DevComponents.DotNetBar.BaseItem[] {
-            this.labelItem1,
+            this.ui__status_labelItem_status,
             this.ui_status_labelItemStatusSB,
             this.labelItemStatusCQG,
             this.progressBarItemCollecting,
@@ -1629,11 +1629,11 @@
             this.metroStatusBar1.TabIndex = 1;
             this.metroStatusBar1.Text = "metroStatusBar1";
             // 
-            // labelItem1
+            // ui__status_labelItem_status
             // 
-            this.labelItem1.Name = "labelItem1";
-            this.labelItem1.Text = "READY";
-            this.labelItem1.Width = 420;
+            this.ui__status_labelItem_status.Name = "ui__status_labelItem_status";
+            this.ui__status_labelItem_status.Text = "READY";
+            this.ui__status_labelItem_status.Width = 420;
             // 
             // ui_status_labelItemStatusSB
             // 
@@ -1694,12 +1694,12 @@
             this.Resize += new System.EventHandler(this.FormMain_Resize);
             this.metroShell1.ResumeLayout(false);
             this.metroShell1.PerformLayout();
-            this.metroTabPanel1.ResumeLayout(false);
-            this.panelEx5.ResumeLayout(false);
-            this.panelEx1.ResumeLayout(false);
             this.metroTabPanel3.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.contextMenuStripTables.ResumeLayout(false);
+            this.metroTabPanel1.ResumeLayout(false);
+            this.panelEx5.ResumeLayout(false);
+            this.panelEx1.ResumeLayout(false);
             this.metroTabPanel2.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.panelEx3.ResumeLayout(false);
@@ -1733,7 +1733,7 @@
         private DevComponents.DotNetBar.Metro.MetroTabItem metroTabItem2;
         private DevComponents.DotNetBar.StyleManager styleManager1;
         private DevComponents.DotNetBar.Metro.MetroStatusBar metroStatusBar1;
-        private DevComponents.DotNetBar.LabelItem labelItem1;
+        private DevComponents.DotNetBar.LabelItem ui__status_labelItem_status;
         private DevComponents.DotNetBar.ButtonItem buttonItem2;
         private DevComponents.DotNetBar.Metro.MetroTabPanel metroTabPanel3;
         private DevComponents.DotNetBar.Metro.MetroTabItem metroTabItem3;

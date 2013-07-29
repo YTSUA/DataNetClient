@@ -20,8 +20,6 @@ using DataAdminCommonLib;
 
 namespace DataNetClient.Forms
 {
-    
-
     public enum eSymbolOperatiomState
     {
         DEFAULT_STATUS = 0,
@@ -392,7 +390,7 @@ namespace DataNetClient.Forms
                 dateTimeInputEnd.Value = DateTime.Now;
                 listBoxSymbols.DrawItem += listBox1_DrawItem;                
 
-                dataCollector.Subscribe(labelItem1,listBoxSymbols,checkedListBoxLists,progressBarItemCollecting, listViewResult);
+                dataCollector.Subscribe(ui__status_labelItem_status,listBoxSymbols,checkedListBoxLists,progressBarItemCollecting, listViewResult);
             }
             catch (Exception exception)
             {
@@ -917,47 +915,6 @@ namespace DataNetClient.Forms
         }        
         */
 
-        private void metroTileItemCollect_Click(object sender, EventArgs e)
-        {
-            return;
-            if (dataCollector.IsBusy())
-            {                
-                return;
-            }
-            if (!IsStartedCQG)
-            {
-                labelItem1.Text = "Start CQG first, please.";
-                return;
-            }
-            if (listBoxSymbols.SelectedItems.Count == 0)
-            {
-                labelItem1.Text = "Please, select the instruments.";
-                return;
-            }
-
-            StartCollecting();
-
-            var symbols = (from object item in listBoxSymbols.SelectedItems select item.ToString()).ToList();
-
-            new Thread(() =>
-                {
-                    Thread.Sleep(1000);
-                    dataCollector.WaitEndOfOperation();
-                    // if last                    
-                    Invoke((Action)delegate
-                    {
-                        Thread.Sleep(1000);
-                        //dbSel.LoadSymbolList(listBoxSymbols);
-                        //TODO: LoadSymbolList(listBoxSymbols);
-
-                        if (checkBoxAutoCheckForMissedBars.Value)
-                            dataCollector.MissingBarRequest(CEL, symbols.ToArray(),(int)nudEndBar.Value,true);
-
-                        //dataCollector.ResetSymbols();
-                    });                    
-                }).Start();
-        
-        }
         
         /*
         public void refreshCustomList()
@@ -1038,36 +995,7 @@ namespace DataNetClient.Forms
 
         public bool CollectingFromList { get; set; }
 
-        private void metroTileItem1_Click(object sender, EventArgs e)
-        {
-            return;
-            if (dataCollector.IsBusy())
-            {
-                return;
-            }
-            if (!IsStartedCQG)
-            {
-                labelItem1.Text = "Start CQG first, please.";
-                return;
-            }
-            if (listBoxTablesName.SelectedItems.Count < 1)
-            {
-                labelItem1.Text="Select tables, please.";
-                return;
-            }
-
-            int N = listBoxTablesName.SelectedItems.Count;
-            var symbols = new string[N];
-
-            for (int i = 0; i < N; i++)
-            {
-                symbols[i] =
-                    listBoxTablesName.SelectedItems[i].ToString();
-            }
-
-
-            dataCollector.MissingBarRequest(CEL, symbols, (int)nudEndBar.Value);
-        }
+      
         /*
         private List<MissedStr> MissedInTable(string smb, List<DateTime> aResultDateTimes, DateTime MissDateTimeStart, DateTime MissDateTimeEnd, bool DayStartsYesterday)
         {
@@ -1152,100 +1080,7 @@ namespace DataNetClient.Forms
 
         
 
-        private void metroTileItemCollectList_Click(object sender, EventArgs e)
-        {
-            return;
-            if (dataCollector.IsBusy())
-            {                
-                return;
-            }
-            if (!IsStartedCQG)
-            {
-                labelItem1.Text = "Start CQG first, please.";
-                return;
-            }
-            if (checkedListBoxLists.CheckedItems.Count == 0)
-            {
-                labelItem1.Text = "Please, select the lists.";
-                return;
-            }
-            //***********    
-
-            var AllSymbols= new List<string>();
-            
-            ThreadPool.QueueUserWorkItem(delegate
-                                             {
-                                                 Thread.CurrentThread.Name = "ForAllLists";
-                                                 foreach (var listName in checkedListBoxLists.CheckedItems)
-                                                 {
-                                                     //bool useTimeRange;
-                                                     //collectSyncMutex.WaitOne();
-                                                     object name = listName;
-                                                     Invoke((Action)delegate
-                                                                        {
-                                                                            //***********
-                                                                            TimeRange tr = customeListsDict[name.ToString()];
-
-                                                                            if (!tr.StartTime.Equals(new DateTime()))
-                            
-                                                                            {
-                                                                                //useTimeRange = true;
-                                                                                startTime = tr.StartTime;
-                                                                                endTime = tr.endTime;
-                            
-                                                                                dateTimeInputStart.Value = startTime;
-                                                                                dateTimeInputEnd.Value = endTime;
-                            
-                                                                            }
-                                                                            eHistoricalPeriod res;
-                                                                            if (Enum.TryParse(tr.strTF_Tyoe, out res))
-                                                                                cmbHistoricalPeriod.SelectedItem = res;
-
-                                                                            else
-                                                                                cmbHistoricalPeriod.SelectedItem = tr.strTF_Tyoe;
-                                                                            eTimeSeriesContinuationType res1;
-                                                                            if (Enum.TryParse(tr.strContinuationType, out res1))
-                                                                            {
-                                                                                cmbContinuationType.SelectedItem = res1;
-                                                                            }
-                                                                            //***********
-
-                                                                            List<String> symbolList =new List<string>();
-                                                                            //TODO: = dbSel.load_cmList(name.ToString(), listBoxSymbols);
-
-                                                                            AllSymbols.AddRange(symbolList);
-                                                                            for (int i = 0; i < listBoxSymbols.Items.Count; i++)
-                                                                            {
-                                                                                listBoxSymbols.SetSelected(i, true);
-                                                                            }
-
-                                                                            StartCollecting();// STRAT COLLECTING SYMBOLS FROM CURRENT LIST
-                                                                        });
-
-                                                     Thread.Sleep(1000);
-                                                     dataCollector.WaitEndOfOperation();
-                                                     // if last
-                                                     if (listName == checkedListBoxLists.CheckedItems[checkedListBoxLists.CheckedItems.Count-1])
-                                                     {
-                        
-                                                         Invoke((Action)delegate
-                                                                            {
-                                                                                Thread.Sleep(1000);
-                                                                                // TODO: dbSel.LoadSymbolList(listBoxSymbols);
-
-                                                                                if(checkBoxAutoCheckForMissedBars.Value)
-                                                                                    dataCollector.MissingBarRequest(CEL, AllSymbols.ToArray(),(int)nudEndBar.Value);
-
-                                                                                //dataCollector.ResetSymbols();
-                                                                            });
-                                                     }
-                        
-                                                 }
-                                             });
-                
-	                                
-        }
-
+       
         private void progressBarItemCollecting_ValueChanged(object sender, EventArgs e)
         {
             Refresh();
@@ -1253,6 +1088,189 @@ namespace DataNetClient.Forms
 
 
         #region  NEW REGION
+
+        #region Collecting UI
+
+        private void metroTileItemCollect_Click(object sender, EventArgs e)
+        {
+            if (!_client.Privileges.CollectSQGAllowed)
+            {
+                ui__status_labelItem_status.Text = "You don't have permissions to do this.";
+                return;
+            }
+
+            if (dataCollector.IsBusy())
+            {
+                return;
+            }
+            if (!IsStartedCQG)
+            {
+                ui__status_labelItem_status.Text = "Start CQG first, please.";
+                return;
+            }
+            if (listBoxSymbols.SelectedItems.Count == 0)
+            {
+                ui__status_labelItem_status.Text = "Please, select the instruments.";
+                return;
+            }
+
+            StartCollecting();
+
+            var symbols = (from object item in listBoxSymbols.SelectedItems select item.ToString()).ToList();
+
+            new Thread(() =>
+            {
+                Thread.Sleep(1000);
+                dataCollector.WaitEndOfOperation();
+                // if last                    
+                Invoke((Action)delegate
+                {
+                    Thread.Sleep(1000);
+                    //dbSel.LoadSymbolList(listBoxSymbols);
+                    //TODO: LoadSymbolList(listBoxSymbols);
+
+                    if (checkBoxAutoCheckForMissedBars.Value)
+                        dataCollector.MissingBarRequest(CEL, symbols.ToArray(), (int)nudEndBar.Value, true);
+
+                    //dataCollector.ResetSymbols();
+                });
+            }).Start();
+
+        }
+
+        private void metroTileItemCollectList_Click(object sender, EventArgs e)
+        {
+            if (!_client.Privileges.CollectSQGAllowed)
+            {
+                ui__status_labelItem_status.Text = "You don't have permissions to do this.";
+                return;
+            }
+            if (dataCollector.IsBusy())
+            {
+                return;
+            }
+            if (!IsStartedCQG)
+            {
+                ui__status_labelItem_status.Text = "Start CQG first, please.";
+                return;
+            }
+            if (checkedListBoxLists.CheckedItems.Count == 0)
+            {
+                ui__status_labelItem_status.Text = "Please, select the lists.";
+                return;
+            }
+            //***********    
+
+            var AllSymbols = new List<string>();
+
+            ThreadPool.QueueUserWorkItem(delegate
+            {
+                Thread.CurrentThread.Name = "ForAllLists";
+                foreach (var listName in checkedListBoxLists.CheckedItems)
+                {
+                    //bool useTimeRange;
+                    //collectSyncMutex.WaitOne();
+                    object name = listName;
+                    Invoke((Action)delegate
+                    {
+                        //***********
+                        TimeRange tr = customeListsDict[name.ToString()];
+
+                        if (!tr.StartTime.Equals(new DateTime()))
+                        {
+                            //useTimeRange = true;
+                            startTime = tr.StartTime;
+                            endTime = tr.endTime;
+
+                            dateTimeInputStart.Value = startTime;
+                            dateTimeInputEnd.Value = endTime;
+
+                        }
+                        eHistoricalPeriod res;
+                        if (Enum.TryParse(tr.strTF_Tyoe, out res))
+                            cmbHistoricalPeriod.SelectedItem = res;
+
+                        else
+                            cmbHistoricalPeriod.SelectedItem = tr.strTF_Tyoe;
+                        eTimeSeriesContinuationType res1;
+                        if (Enum.TryParse(tr.strContinuationType, out res1))
+                        {
+                            cmbContinuationType.SelectedItem = res1;
+                        }
+                        //***********
+
+                        List<String> symbolList = new List<string>();
+                        //TODO: = dbSel.load_cmList(name.ToString(), listBoxSymbols);
+
+                        AllSymbols.AddRange(symbolList);
+                        for (int i = 0; i < listBoxSymbols.Items.Count; i++)
+                        {
+                            listBoxSymbols.SetSelected(i, true);
+                        }
+
+                        StartCollecting();// STRAT COLLECTING SYMBOLS FROM CURRENT LIST
+                    });
+
+                    Thread.Sleep(1000);
+                    dataCollector.WaitEndOfOperation();
+                    // if last
+                    if (listName == checkedListBoxLists.CheckedItems[checkedListBoxLists.CheckedItems.Count - 1])
+                    {
+
+                        Invoke((Action)delegate
+                        {
+                            Thread.Sleep(1000);
+                            // TODO: dbSel.LoadSymbolList(listBoxSymbols);
+
+                            if (checkBoxAutoCheckForMissedBars.Value)
+                                dataCollector.MissingBarRequest(CEL, AllSymbols.ToArray(), (int)nudEndBar.Value);
+
+                            //dataCollector.ResetSymbols();
+                        });
+                    }
+
+                }
+            });
+
+
+        }
+
+        private void metroTileItem1_Click(object sender, EventArgs e)
+        {
+            if (!_client.Privileges.MissingBarFAllowed)
+            {
+                ui__status_labelItem_status.Text = "You don't have permissions to do this.";
+                return;
+            }
+            if (dataCollector.IsBusy())
+            {
+                return;
+            }
+            if (!IsStartedCQG)
+            {
+                ui__status_labelItem_status.Text = "Start CQG first, please.";
+                return;
+            }
+            if (listBoxTablesName.SelectedItems.Count < 1)
+            {
+                ui__status_labelItem_status.Text = "Select tables, please.";
+                return;
+            }
+
+            int N = listBoxTablesName.SelectedItems.Count;
+            var symbols = new string[N];
+
+            for (int i = 0; i < N; i++)
+            {
+                symbols[i] =
+                    listBoxTablesName.SelectedItems[i].ToString();
+            }
+
+
+            dataCollector.MissingBarRequest(CEL, symbols, (int)nudEndBar.Value);
+        }
+
+        #endregion
 
         #region SYMBOLS
 

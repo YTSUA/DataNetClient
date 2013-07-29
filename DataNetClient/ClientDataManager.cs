@@ -29,6 +29,10 @@ namespace DataNetClient
         private const string TblSymbolsInGroups = "tbl_symbols_in_groups";
         private const string TblGroupsForUsers = "tbl_groups_for_users";
 
+        private const string TblMissingBarException = "tblMissingBarException";
+        private const string TblSessionHolidayTimes = "tblSessionHolidayTimes";
+        private const string Tblfullreport = "tblfullreport";
+
         private static readonly List<string> QueryQueue = new List<string>();
         private const int MaxQueueSize = 500;
 
@@ -336,7 +340,7 @@ namespace DataNetClient
 
         }
 
-        private static void AddToQueue(string sql)
+        public static void AddToQueue(string sql)
         {
             QueryQueue.Add(sql);
             if (QueryQueue.Count >= MaxQueueSize)
@@ -354,6 +358,476 @@ namespace DataNetClient
             DoSql(fullSql);
 
             QueryQueue.Clear();
+        }
+
+        public static void CreateTickTable(string symbol)
+        {
+            var str = symbol.Trim().Split('.');
+            var sql = "CREATE TABLE IF NOT EXISTS `t_tick_" + str[str.Length - 1] + "` (";
+            sql += "`ID` INT(12) NOT NULL AUTO_INCREMENT,";
+            sql += "`Symbol` VARCHAR(30) NULL DEFAULT NULL,";
+            sql += "`Price` FLOAT(9,5) NULL DEFAULT NULL,";
+            sql += "`Volume` INT(25) NULL DEFAULT NULL,";
+            sql += "`TickTime` DATETIME NULL DEFAULT NULL,";
+            sql += "`CollectTime` DATETIME NULL DEFAULT NULL,";
+            sql += "`ContinuationType` VARCHAR(50) NULL DEFAULT NULL,";
+            sql += "`PriceType` VARCHAR(30) NULL DEFAULT NULL,";
+            sql += "`GroupID` INT(12) NULL DEFAULT NULL,";
+            sql += "PRIMARY KEY (`ID`),";
+            sql += "UNIQUE INDEX `UNQ_DATA_INDEX` (`Symbol`, `CollectTime`, `GroupID`)";
+            sql += ")";
+            sql += "COLLATE='latin1_swedish_ci'";
+            sql += "ENGINE=InnoDB;";
+            DoSql(sql);
+        }
+
+        public static void CreateBarsTable(string symbol, string tableType)
+        {
+            var str = symbol.Trim().Split('.');
+            var sql = "CREATE TABLE IF NOT EXISTS `t_candle_" + str[str.Length - 1] + "_" + tableType + "` (";
+            sql += "`ID` INT(11) NOT NULL AUTO_INCREMENT,";
+            sql += "`cdSymbol` VARCHAR(30) NULL DEFAULT NULL,";
+            sql += "`cdOpen` FLOAT(9,5) NULL DEFAULT NULL,";
+            sql += "`cdHigh` FLOAT(9,5) NULL DEFAULT NULL,";
+            sql += "`cdLow` FLOAT(9,5) NULL DEFAULT NULL,";
+            sql += "`cdClose` FLOAT(9,5) NULL DEFAULT NULL,";
+            sql += "`cdTickVolume` INT(25) NULL DEFAULT NULL,";
+            sql += "`cdActualVolume` INT(25) NULL DEFAULT NULL,";
+            sql += "`cdAskVol` INT(25) NULL DEFAULT NULL,";
+            sql += "`cdBidVol` INT(25) NULL DEFAULT NULL,";
+            sql += "`cdAvg` FLOAT(9,5) NULL DEFAULT NULL,";
+            sql += "`cdDT` DATETIME NULL DEFAULT NULL,";
+            sql += "`cdSystemDT` DATE NULL DEFAULT NULL,";
+            sql += "`cddatenum` DATETIME NULL DEFAULT NULL,";
+            sql += "`cn_type` VARCHAR(25) NULL DEFAULT NULL,";
+            sql += "`cdHLC3` FLOAT(9,5) NULL DEFAULT NULL,";
+            sql += "`cdMid` FLOAT(9,5) NULL DEFAULT NULL,";
+            sql += "`cdOpenInterest` INT(11) NULL DEFAULT NULL,";
+            sql += "`cdRange` CHAR(30) NULL DEFAULT NULL,";
+            sql += "`cdTrueHigh` FLOAT(9,5) NULL DEFAULT NULL,";
+            sql += "`cdTrueLow` FLOAT(9,5) NULL DEFAULT NULL,";
+            sql += "`cdTrueRange` FLOAT(9,5) NULL DEFAULT NULL,";
+            sql += "`cdTimeInterval` DATETIME NULL DEFAULT NULL,";
+            sql += "PRIMARY KEY (`ID`),";
+            sql += "UNIQUE INDEX `UNQ_DATA_INDEX` (`cdSymbol`, `cddatenum`)";
+            sql += ")";
+            sql += "COLLATE='latin1_swedish_ci'";
+            sql += "ENGINE=InnoDB;";
+            DoSql(sql);
+        }
+
+        public static void CreateMissingBarExceptionTable()
+        {
+
+            var sql = "CREATE TABLE IF NOT EXISTS `" + TblMissingBarException + "` (";
+
+            sql += "`Instrument` VARCHAR(30) NOT NULL ,";
+            sql += "`RefreshTimestamp` DATETIME NOT NULL ,";
+            sql += "`Timestamp` DATETIME NULL ,";
+
+            sql += "`MissingOpen` BOOL NULL DEFAULT NULL,";
+            sql += "`MissingHigh` BOOL NULL DEFAULT NULL,";
+            sql += "`MissingLow` BOOL NULL DEFAULT NULL,";
+            sql += "`MissingClose` BOOL NULL DEFAULT NULL,";
+            sql += "`MissingVolume` BOOL NULL DEFAULT NULL,";
+            sql += "PRIMARY KEY (`Instrument`,`RefreshTimestamp`,`Timestamp`)";
+            sql += ")";
+            sql += "COLLATE='latin1_swedish_ci'";
+            sql += "ENGINE=InnoDB;";
+            DoSql(sql);
+
+        }
+
+        public static void CreateSessionHolidayTimesTable()
+        {
+            var sql = "CREATE TABLE IF NOT EXISTS `" + TblSessionHolidayTimes + "` (";
+
+            sql += "`Instrument` VARCHAR(30) NOT NULL ,";
+            sql += "`Exchange` VARCHAR(30) NOT NULL ,";
+            sql += "`StartTime` Datetime NOT NULL ,";
+            sql += "`EndTime` Datetime NOT NULL ,";
+            sql += "`Status` VARCHAR(30) NOT NULL ,";
+
+            sql += "`WorkingDays` VARCHAR(30)  NULL ,";
+            sql += "`DayStartsYesterday` BOOL NULL ,";
+            sql += "`PrimaryFlag` BOOL  NULL ,";
+            sql += "`Number` int NULL ,";
+            sql += "`FirstCollect` Datetime NOT  NULL ,";
+            sql += "`RefreshTimestamp` Datetime NOT  NULL ,";
+            sql += "PRIMARY KEY (`Instrument`,`StartTime`,`WorkingDays`)";
+            sql += ")";
+            sql += "COLLATE='latin1_swedish_ci'";
+            sql += "ENGINE=InnoDB;";
+
+            DoSql(sql);
+        }
+
+        public static void AddToSessionTable(string instrument, string exchange, DateTime timeStart, DateTime timeEnd, string status,
+            string workingDays, bool dayStartsYesterday, bool primary, int number, DateTime refresh)
+        {
+            MySqlDataReader reader = null;
+            try
+            {
+                // add
+                bool rowExists = false;
+                string timeSStr = Convert.ToDateTime(timeStart).ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
+                string timeEStr = Convert.ToDateTime(timeEnd).ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
+                string timeRefresh = Convert.ToDateTime(refresh).ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
+                DateTime firstCollect = DateTime.Now;
+                reader = GetReader("SELECT * FROM " + TblSessionHolidayTimes + " WHERE `Instrument` = '" + instrument + "' AND `StartTime` = '" + timeSStr + "' AND `EndTime` = '" + timeEStr + "' AND `WorkingDays` = '" + workingDays + "'");
+                if (reader.Read())
+                {
+                    rowExists = true;
+                    firstCollect = reader.GetDateTime(9);
+                }
+                reader.Close();
+
+                if (rowExists && (refresh - firstCollect).TotalDays < 30)
+                {
+                    DoSql("UPDATE " + TblSessionHolidayTimes + " SET " +
+                        " `RefreshTimestamp` = '" + timeRefresh + "' " +
+                        "WHERE `Instrument` = '" + instrument + "' AND `StartTime` = '" + timeSStr + "' AND `EndTime` = '" + timeEStr + "'");
+                }
+                else
+                {
+                    DoSql("INSERT INTO " + TblSessionHolidayTimes + "(`Instrument`,`Exchange`,`StartTime`,`EndTime`,`Status`,"
+                        + "`WorkingDays`,`DayStartsYesterday`,`PrimaryFlag`,`Number`,`FirstCollect`,`RefreshTimestamp`) " +
+                        "VALUES('" + instrument + "', '" + exchange + "', '" + timeSStr + "', '" + timeEStr + "', '" + status + "', '" +
+                        workingDays + "', " + dayStartsYesterday + " , " + primary + " , " + number + " , '" + timeRefresh + "' , '" + timeRefresh + "');COMMIT;");
+                }
+            }
+            catch (Exception ex)
+            {
+                //logger.LogAdd("AddToSessionTable. " + ex.Message, Category.Error);
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
+            }
+        }
+
+        public static void ClearMissingBar(string table)
+        {
+            MySqlDataReader reader = null;
+            try
+            {
+
+                string instr = string.Empty;
+
+                reader = GetReader("SELECT * FROM " + table);
+                if (reader.Read())
+                {
+                    instr += reader.GetValue(1);
+                }
+                reader.Close();
+
+                if (instr != string.Empty)
+                    DoSql("DELETE FROM "+TblMissingBarException+" WHERE `Instrument` = '" + instr + "';");
+            }
+            catch (Exception)
+            {
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
+            }
+        }
+
+        public static void ChangeBarStatusInMissingTable(string instrument, DateTime refresh, DateTime dateTime)
+        {
+            MySqlDataReader reader = null;
+            try
+            {
+                // add
+                bool rowExists = false;
+                string dateRefresh = Convert.ToDateTime(refresh).ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
+                string dateStr = Convert.ToDateTime(dateTime).ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
+
+
+
+                reader = GetReader("SELECT * FROM "+TblMissingBarException+" WHERE `Instrument` = '" + instrument + "' AND `Timestamp` = '" + dateStr + "'");
+                if (reader.Read())
+                {
+                    rowExists = true;
+                }
+                reader.Close();
+
+                if (rowExists)
+                {
+                    DoSql("UPDATE " + TblMissingBarException + " SET " +
+                        "`RefreshTimestamp` = '" + dateRefresh + "', `MissingOpen` = 0,`MissingHigh` = 0,`MissingLow` = 0,`MissingClose` = 0,`MissingVolume` = 0 " +
+                        " WHERE  `Instrument` = '" + instrument + "' AND `Timestamp` = '" + dateStr + "';COMMIT;");
+                }
+            }
+            catch (Exception ex)
+            {
+//                logger.LogAdd("ChangeBarStatusInMissingTable. " + ex.Message, Category.Error);
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
+            }
+        }
+
+        public static void DelFromReport(string instrument)
+        {
+            var sql = "DELETE FROM " + Tblfullreport + " WHERE Instrument = '" + instrument + "'";
+            DoSql(sql);
+        }
+
+        public static bool TableExists(string p)
+        {
+            return true;
+        }
+
+        public static string GetTableFromSymbol(string symbol)
+        {
+            string str5 = symbol.Trim();
+            string[] str = str5.Split('.');
+            str5 = str[str.Length - 1];
+
+            return "t_candle_" + str5 + "_1m";
+        }
+
+        public static List<DateTime> GetAllDates(string tableName, int maxCount = 0)
+        {
+            MySqlDataReader reader = null;
+            var result = new List<DateTime>();
+            try
+            {
+                reader = maxCount == 0 ? GetReader("SELECT cdDT FROM " + tableName + " order by cdDT ") : GetReader("SELECT cdDT FROM " + tableName + " order by cdDT DESC LIMIT " + maxCount);
+                while (reader.Read())
+                {
+                    var a = (DateTime)reader.GetValue(0);
+                    if (!result.Contains(a.Date))
+                        result.Add(a.Date);
+                }
+
+                reader.Close();
+
+                if (maxCount != 0)
+                    result.Reverse();
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                //MessageBox.Show();
+                //logger.LogAdd("Error in : DBS LoadTableForRequest. :" + ex.Message, Category.Error);
+                return null;
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
+            }
+
+        }
+
+        public static List<DateTime> GetAllDateTimes(string tableName, int maxCount = 0)
+        {
+            MySqlDataReader reader = null;
+            var result = new List<DateTime>();
+            try
+            {
+                reader = maxCount == 0 ? GetReader("SELECT cdDT FROM " + tableName + " order by cdDT") : GetReader("SELECT cdDT FROM " + tableName + " order by cdDT DESC LIMIT " + maxCount);
+                while (reader.Read())
+                {
+                    var a = (DateTime)reader.GetValue(0);
+                    result.Add(a);
+                }
+
+                reader.Close();
+
+                if (maxCount != 0)
+                    result.Reverse();
+                //CloseConnection();
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                //MessageBox.Show("Error in : DBS LoadTableForRequest");
+                //logger.LogAdd("Error in :  getAllDateTimes. :" + ex.Message, Category.Error);
+                return null;
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
+            }
+        }
+
+        public static bool HolidaysContains(string tableName, DateTime dateTime)
+        {
+            String dt = "'" + Convert.ToDateTime(dateTime).ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture) + "'";
+
+            MySqlDataReader reader = null;
+
+            try
+            {
+                reader = GetReader("SELECT * FROM `" + TblSessionHolidayTimes + "` WHERE  `Instrument`='" + GetSymbolFromTable(tableName) + "' and `StartTime` = " + dt + " and `Status` = 'Holiday';");
+
+                if (reader.Read())
+                {
+                    reader.Close();
+                    return true;
+                }
+                reader.Close();
+                return false;
+            }
+            catch (Exception ex)
+            {
+                //logger.LogAdd("HolidaysContains. " + ex.Message, Category.Error);
+                return false;
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
+            }
+        }
+
+        private static string GetSymbolFromTable(string tableName)
+        {
+
+            MySqlDataReader reader = null;
+            string result = "";
+            try
+            {
+
+                reader = GetReader("SELECT cdSymbol FROM " + tableName + " LIMIT 1");
+                if (reader.Read())
+                {
+                    result = (string)reader.GetValue(0);
+                }
+
+                reader.Close();
+                //CloseConnection();
+                return result;
+            }
+            catch (Exception exception)
+            {
+                //logger.LogAdd("getSymbolFromTable. " + exception, Category.Error);
+                //MessageBox.Show("Error in : DBS LoadTableForRequest");
+                return null;
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
+            }
+
+        }
+
+        public static void ChangeBarStatusInMissingTableWithOutCommit(string instrument, DateTime refresh, DateTime dateTime)
+        {
+            //ChangeBarStatusInMissingTable
+            string dateRefresh = Convert.ToDateTime(refresh).ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
+            string dateStr = Convert.ToDateTime(dateTime).ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
+
+
+            string query = "UPDATE " + TblMissingBarException + " SET " +
+                        "`RefreshTimestamp` = '" + dateRefresh + "', `MissingOpen` = 0,`MissingHigh` = 0,`MissingLow` = 0,`MissingClose` = 0,`MissingVolume` = 0 " +
+                        " WHERE  `Instrument` = '" + instrument + "' AND `Timestamp` = '" + dateStr + "';COMMIT;";
+            AddToQueue(query);
+        }
+
+
+        public static void AddToReport(string instrument, DateTime curDate, string state, string startDay, DateTime sTime, string endDay, DateTime eTime)
+        {
+            string currDate = Convert.ToDateTime(curDate).ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
+            string startDate = Convert.ToDateTime(sTime).ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
+            string endDate = Convert.ToDateTime(eTime).ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
+
+
+            string query = "INSERT IGNORE INTO " + Tblfullreport + "(`Instrument`,`Date`,`State`,`StartDay`,`StartTime`,`EndDay`,`EndTime`) " +
+                    "VALUES('" + instrument + "', '" + currDate + "', '" + state + "', '" + startDay + "', '" + startDate + "', '" + endDay + "', '" + endDate + "');";
+
+            DoSql(query);
+        }
+
+
+        public static IEnumerable<DateTime> GetMissedBarsForSymbol(string smb1)
+        {
+            var aRes = new List<DateTime>();
+            MySqlDataReader reader = null;
+            try
+            {
+                //string instr = string.Empty;
+                reader = GetReader("SELECT * FROM `" + TblMissingBarException + "` WHERE `Instrument` = '" + smb1 + "' and `MissingOpen` <> 0" +
+                    " ORDER BY `Timestamp`");
+                while (reader.Read())
+                {
+                    aRes.Add(reader.GetDateTime(2));
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                //logger.LogAdd("getMissedBarsForSymbol. " + ex.Message, Category.Error);
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
+            }
+            return aRes;
+        }
+
+        public static void DelFromReport(string instrument, DateTime from)
+        {
+            string fromDate = Convert.ToDateTime(from.Date).ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
+            string sql = "DELETE FROM "+Tblfullreport+" WHERE Instrument = '" + instrument + "' AND Date >= '" + fromDate + "'";
+            DoSql(sql);
+        }
+
+
+        public static List<ReportItem> GetReport(string instrument)
+        {
+            var result = new List<ReportItem>();
+            MySqlDataReader reader = null;
+
+            try
+            {
+                //string timeSStr = Convert.ToDateTime(missedItem).ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
+                reader = GetReader("SELECT * FROM " + Tblfullreport + " WHERE  `Instrument` = '" + instrument + "' ");
+
+                while (reader.Read())
+                {
+                    string aState = reader.GetString(3);
+                    DateTime aCurrDate = reader.GetDateTime(2);
+                    DateTime aStartDate = reader.GetDateTime(5);
+                    DateTime aEndDate = reader.GetDateTime(7);
+                    var ri = new ReportItem { Instrument = instrument, State = aState, CurDate = aCurrDate, STime = aStartDate, ETime = aEndDate };
+                    result.Add(ri);
+                }
+
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                //logger.LogAdd("GetReport. " + ex.Message, Category.Error);
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
+            }
+
+            return result;
+        }
+
+
+        public static void AddToMissingTableWithOutCommit(string instrument, DateTime refresh, DateTime curTime)
+        {
+            //AddToMissingTable(instrument, refresh, curTime);
+
+            string dateRefresh = Convert.ToDateTime(refresh).ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
+            string dateStr = Convert.ToDateTime(curTime).ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
+
+            string qu = "DELETE FROM " + TblMissingBarException + " WHERE `Instrument` = '" + instrument + "' AND `Timestamp` = '" + dateStr + "';";
+
+
+            string query = "INSERT IGNORE INTO " + TblMissingBarException + "(`Instrument`,`RefreshTimestamp`,`Timestamp`,`MissingOpen`,`MissingHigh`,`MissingLow`,`MissingClose`,`MissingVolume`) " +
+                    "VALUES('" + instrument + "', '" + dateRefresh + "', '" + dateStr + "', 1, 1, 1, 1, 1);";
+
+            AddToQueue(qu);
+            AddToQueue(query);
         }
 
         #endregion
@@ -444,6 +918,25 @@ namespace DataNetClient
             DoSql(createGroupsForUsers);
         }
 
-        #endregion
+        #endregion       
+    }
+
+    public struct TimeRange
+    {
+        public DateTime StartTime;
+        public DateTime endTime;
+        public String strTF_Tyoe;
+        public String strContinuationType;
+    }
+
+    public struct ReportItem
+    {
+        public string Instrument;
+        public DateTime CurDate;
+        public string State;
+        public string StartDay;
+        public DateTime STime;
+        public string EndDay;
+        public DateTime ETime;
     }
 }
