@@ -68,21 +68,22 @@ namespace DataNetClient
             //TODO: Rename TICKS and BARS tables
         }
 
-        public static List<SymbolModel> GetSymbols()
+        public static List<SymbolModel> GetSymbols(int userId)
         {
             var symbolsList = new List<SymbolModel>();
 
-            const string sql = "SELECT * FROM " + TblSymbols;
-            MySqlDataReader reader = GetReader(sql);
-            if (reader != null)
+            var userGroups = GetGroups(userId);
+            foreach (var groupModel in userGroups)
             {
-                while (reader.Read())
+                var listSymbols = GetSymbolsInGroup(groupModel.GroupId);
+                foreach (var symbolModel in listSymbols)
                 {
-                    var symbol = new SymbolModel { SymbolId = reader.GetInt32(0), SymbolName = reader.GetString(1) };
-                    symbolsList.Add(symbol);
+                    if(! symbolsList.Exists(a=>a.SymbolName == symbolModel.SymbolName))
+                    {
+                        symbolsList.Add(symbolModel);
+                    }
                 }
-
-                reader.Close();
+                
             }
             return symbolsList;
         }
@@ -157,7 +158,7 @@ namespace DataNetClient
         {           
             var groupList = new List<GroupModel>();
 
-            var sql = "SELECT * FROM " + TblGroupsForUsers + " WHERE UserID=" + userId.ToString() + "; COMMIT;";
+            var sql = "SELECT * FROM " + TblGroupsForUsers + " WHERE UserID=" + userId + "; COMMIT;";
             var reader = GetReader(sql);
             if (reader != null)
             {
@@ -359,6 +360,9 @@ namespace DataNetClient
 
             QueryQueue.Clear();
         }
+        #endregion
+
+        #region COLLECTING & MISSINGBARS
 
         public static void CreateTickTable(string symbol)
         {
@@ -703,7 +707,7 @@ namespace DataNetClient
                 //CloseConnection();
                 return result;
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
                 //logger.LogAdd("getSymbolFromTable. " + exception, Category.Error);
                 //MessageBox.Show("Error in : DBS LoadTableForRequest");
@@ -729,7 +733,6 @@ namespace DataNetClient
             AddToQueue(query);
         }
 
-
         public static void AddToReport(string instrument, DateTime curDate, string state, string startDay, DateTime sTime, string endDay, DateTime eTime)
         {
             string currDate = Convert.ToDateTime(curDate).ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
@@ -742,7 +745,6 @@ namespace DataNetClient
 
             DoSql(query);
         }
-
 
         public static IEnumerable<DateTime> GetMissedBarsForSymbol(string smb1)
         {
@@ -777,7 +779,6 @@ namespace DataNetClient
             DoSql(sql);
         }
 
-
         public static List<ReportItem> GetReport(string instrument)
         {
             var result = new List<ReportItem>();
@@ -811,7 +812,6 @@ namespace DataNetClient
 
             return result;
         }
-
 
         public static void AddToMissingTableWithOutCommit(string instrument, DateTime refresh, DateTime curTime)
         {
@@ -924,9 +924,9 @@ namespace DataNetClient
     public struct TimeRange
     {
         public DateTime StartTime;
-        public DateTime endTime;
-        public String strTF_Tyoe;
-        public String strContinuationType;
+        public DateTime EndTime;
+        public String StrTF_Tyoe;
+        public String StrContinuationType;
     }
 
     public struct ReportItem

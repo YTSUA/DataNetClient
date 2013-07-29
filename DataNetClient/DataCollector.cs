@@ -737,8 +737,8 @@ namespace DataNetClient
                     aResultDateTimes = ClientDataManager.GetAllDateTimes(ClientDataManager.GetTableFromSymbol(currentSymbol), maxCount + 1);
 
                     aResultDates = ClientDataManager.GetAllDates(ClientDataManager.GetTableFromSymbol(currentSymbol), maxCount + 1);
-
-                    ClientDataManager.DelFromReport(currentSymbol, aResultDateTimes.First());
+                    if (aResultDateTimes.Count>0)
+                        ClientDataManager.DelFromReport(currentSymbol, aResultDateTimes.First());
 
                 }
                 if (aResultDates == null || aResultDates.Count == 0)

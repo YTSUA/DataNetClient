@@ -1,4 +1,7 @@
-﻿namespace DataNetClient.Forms
+﻿using DataAdminCommonLib;
+using Hik.Communication.ScsServices.Client;
+
+namespace DataNetClient.Forms
 {
     partial class FormMain
     {
@@ -50,24 +53,6 @@
             this.columnHeaderEnd = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.metroTilePanel1 = new DevComponents.DotNetBar.Metro.MetroTilePanel();
             this.metroTileItemMissingBar = new DevComponents.DotNetBar.Metro.MetroTileItem();
-            this.metroTabPanel1 = new DevComponents.DotNetBar.Metro.MetroTabPanel();
-            this.panelEx5 = new DevComponents.DotNetBar.PanelEx();
-            this.ui_LabelX_sharedAvaliable = new DevComponents.DotNetBar.LabelX();
-            this.ui_buttonX_shareConnect = new DevComponents.DotNetBar.ButtonX();
-            this.labelX16 = new DevComponents.DotNetBar.LabelX();
-            this.panelEx1 = new DevComponents.DotNetBar.PanelEx();
-            this.ui_LabelX_localAvaliable = new DevComponents.DotNetBar.LabelX();
-            this.checkBoxX1 = new DevComponents.DotNetBar.Controls.CheckBoxX();
-            this.ui_buttonX_localConnect = new DevComponents.DotNetBar.ButtonX();
-            this.labelX5 = new DevComponents.DotNetBar.LabelX();
-            this.labelX4 = new DevComponents.DotNetBar.LabelX();
-            this.textBoxX4 = new DevComponents.DotNetBar.Controls.TextBoxX();
-            this.labelX3 = new DevComponents.DotNetBar.LabelX();
-            this.textBoxX3 = new DevComponents.DotNetBar.Controls.TextBoxX();
-            this.labelX2 = new DevComponents.DotNetBar.LabelX();
-            this.textBoxX2 = new DevComponents.DotNetBar.Controls.TextBoxX();
-            this.labelX1 = new DevComponents.DotNetBar.LabelX();
-            this.textBoxX1 = new DevComponents.DotNetBar.Controls.TextBoxX();
             this.metroTabPanel2 = new DevComponents.DotNetBar.Metro.MetroTabPanel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panelEx3 = new DevComponents.DotNetBar.PanelEx();
@@ -111,6 +96,24 @@
             this.toolStripMenuItem7 = new System.Windows.Forms.ToolStripSeparator();
             this.newSymbolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteSymbolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.metroTabPanel1 = new DevComponents.DotNetBar.Metro.MetroTabPanel();
+            this.panelEx5 = new DevComponents.DotNetBar.PanelEx();
+            this.ui_LabelX_sharedAvaliable = new DevComponents.DotNetBar.LabelX();
+            this.ui_buttonX_shareConnect = new DevComponents.DotNetBar.ButtonX();
+            this.labelX16 = new DevComponents.DotNetBar.LabelX();
+            this.panelEx1 = new DevComponents.DotNetBar.PanelEx();
+            this.ui_LabelX_localAvaliable = new DevComponents.DotNetBar.LabelX();
+            this.checkBoxX1 = new DevComponents.DotNetBar.Controls.CheckBoxX();
+            this.ui_buttonX_localConnect = new DevComponents.DotNetBar.ButtonX();
+            this.labelX5 = new DevComponents.DotNetBar.LabelX();
+            this.labelX4 = new DevComponents.DotNetBar.LabelX();
+            this.textBoxX4 = new DevComponents.DotNetBar.Controls.TextBoxX();
+            this.labelX3 = new DevComponents.DotNetBar.LabelX();
+            this.textBoxX3 = new DevComponents.DotNetBar.Controls.TextBoxX();
+            this.labelX2 = new DevComponents.DotNetBar.LabelX();
+            this.textBoxX2 = new DevComponents.DotNetBar.Controls.TextBoxX();
+            this.labelX1 = new DevComponents.DotNetBar.LabelX();
+            this.textBoxX1 = new DevComponents.DotNetBar.Controls.TextBoxX();
             this.metroTabPanel4 = new DevComponents.DotNetBar.Metro.MetroTabPanel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.listViewLogger = new System.Windows.Forms.ListView();
@@ -144,9 +147,6 @@
             this.metroTabPanel3.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.contextMenuStripTables.SuspendLayout();
-            this.metroTabPanel1.SuspendLayout();
-            this.panelEx5.SuspendLayout();
-            this.panelEx1.SuspendLayout();
             this.metroTabPanel2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.panelEx3.SuspendLayout();
@@ -161,6 +161,9 @@
             this.grbDataCollectType.SuspendLayout();
             this.panelEx2.SuspendLayout();
             this.contextMenuStripSymbols.SuspendLayout();
+            this.metroTabPanel1.SuspendLayout();
+            this.panelEx5.SuspendLayout();
+            this.panelEx1.SuspendLayout();
             this.metroTabPanel4.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.contextMenuStripLists.SuspendLayout();
@@ -175,8 +178,8 @@
             this.metroShell1.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
             this.metroShell1.CanCustomize = false;
             this.metroShell1.CaptionVisible = true;
-            this.metroShell1.Controls.Add(this.metroTabPanel3);
             this.metroShell1.Controls.Add(this.metroTabPanel2);
+            this.metroShell1.Controls.Add(this.metroTabPanel3);
             this.metroShell1.Controls.Add(this.metroTabPanel1);
             this.metroShell1.Controls.Add(this.metroTabPanel4);
             this.metroShell1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -235,6 +238,7 @@
             // 
             this.metroTabPanel3.StyleMouseOver.CornerType = DevComponents.DotNetBar.eCornerType.Square;
             this.metroTabPanel3.TabIndex = 3;
+            this.metroTabPanel3.Visible = false;
             // 
             // tableLayoutPanel2
             // 
@@ -403,309 +407,6 @@
             this.metroTileItemMissingBar.TitleText = "Analyzing";
             this.metroTileItemMissingBar.Click += new System.EventHandler(this.metroTileItem1_Click);
             // 
-            // metroTabPanel1
-            // 
-            this.metroTabPanel1.ColorSchemeStyle = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
-            this.metroTabPanel1.Controls.Add(this.panelEx5);
-            this.metroTabPanel1.Controls.Add(this.panelEx1);
-            this.metroTabPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.metroTabPanel1.Location = new System.Drawing.Point(0, 51);
-            this.metroTabPanel1.Name = "metroTabPanel1";
-            this.metroTabPanel1.Padding = new System.Windows.Forms.Padding(3, 0, 3, 3);
-            this.metroTabPanel1.Size = new System.Drawing.Size(879, 407);
-            // 
-            // 
-            // 
-            this.metroTabPanel1.Style.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-            // 
-            // 
-            // 
-            this.metroTabPanel1.StyleMouseDown.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-            // 
-            // 
-            // 
-            this.metroTabPanel1.StyleMouseOver.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-            this.metroTabPanel1.StyleMouseOver.TextColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.metroTabPanel1.TabIndex = 0;
-            this.metroTabPanel1.Visible = false;
-            // 
-            // panelEx5
-            // 
-            this.panelEx5.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.panelEx5.CanvasColor = System.Drawing.SystemColors.Control;
-            this.panelEx5.ColorSchemeStyle = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
-            this.panelEx5.Controls.Add(this.ui_LabelX_sharedAvaliable);
-            this.panelEx5.Controls.Add(this.ui_buttonX_shareConnect);
-            this.panelEx5.Controls.Add(this.labelX16);
-            this.panelEx5.Location = new System.Drawing.Point(153, 53);
-            this.panelEx5.Name = "panelEx5";
-            this.panelEx5.Size = new System.Drawing.Size(272, 249);
-            this.panelEx5.Style.Alignment = System.Drawing.StringAlignment.Center;
-            this.panelEx5.Style.BackColor1.ColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.BarBackground;
-            this.panelEx5.Style.Border = DevComponents.DotNetBar.eBorderType.SingleLine;
-            this.panelEx5.Style.BorderColor.ColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.PanelBorder;
-            this.panelEx5.Style.ForeColor.ColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.PanelText;
-            this.panelEx5.Style.GradientAngle = 90;
-            this.panelEx5.TabIndex = 17;
-            // 
-            // ui_LabelX_sharedAvaliable
-            // 
-            // 
-            // 
-            // 
-            this.ui_LabelX_sharedAvaliable.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-            this.ui_LabelX_sharedAvaliable.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ui_LabelX_sharedAvaliable.ForeColor = System.Drawing.Color.Black;
-            this.ui_LabelX_sharedAvaliable.Location = new System.Drawing.Point(113, 34);
-            this.ui_LabelX_sharedAvaliable.Name = "ui_LabelX_sharedAvaliable";
-            this.ui_LabelX_sharedAvaliable.PaddingRight = 6;
-            this.ui_LabelX_sharedAvaliable.Size = new System.Drawing.Size(156, 32);
-            this.ui_LabelX_sharedAvaliable.TabIndex = 23;
-            this.ui_LabelX_sharedAvaliable.Text = "avaliable";
-            this.ui_LabelX_sharedAvaliable.TextAlignment = System.Drawing.StringAlignment.Far;
-            // 
-            // ui_buttonX_shareConnect
-            // 
-            this.ui_buttonX_shareConnect.AccessibleRole = System.Windows.Forms.AccessibleRole.PushButton;
-            this.ui_buttonX_shareConnect.ColorTable = DevComponents.DotNetBar.eButtonColor.OrangeWithBackground;
-            this.ui_buttonX_shareConnect.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ui_buttonX_shareConnect.Location = new System.Drawing.Point(49, 212);
-            this.ui_buttonX_shareConnect.Name = "ui_buttonX_shareConnect";
-            this.ui_buttonX_shareConnect.Size = new System.Drawing.Size(144, 29);
-            this.ui_buttonX_shareConnect.Style = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
-            this.ui_buttonX_shareConnect.TabIndex = 21;
-            this.ui_buttonX_shareConnect.Text = "Connect to Share DB";
-            this.ui_buttonX_shareConnect.Click += new System.EventHandler(this.ui_buttonX_shareConnect_Click);
-            // 
-            // labelX16
-            // 
-            // 
-            // 
-            // 
-            this.labelX16.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-            this.labelX16.Dock = System.Windows.Forms.DockStyle.Top;
-            this.labelX16.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelX16.ForeColor = System.Drawing.Color.Black;
-            this.labelX16.Location = new System.Drawing.Point(0, 0);
-            this.labelX16.Name = "labelX16";
-            this.labelX16.PaddingLeft = 6;
-            this.labelX16.Size = new System.Drawing.Size(272, 32);
-            this.labelX16.TabIndex = 20;
-            this.labelX16.Text = "SHARED DB";
-            // 
-            // panelEx1
-            // 
-            this.panelEx1.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.panelEx1.CanvasColor = System.Drawing.SystemColors.Control;
-            this.panelEx1.ColorSchemeStyle = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
-            this.panelEx1.Controls.Add(this.ui_LabelX_localAvaliable);
-            this.panelEx1.Controls.Add(this.checkBoxX1);
-            this.panelEx1.Controls.Add(this.ui_buttonX_localConnect);
-            this.panelEx1.Controls.Add(this.labelX5);
-            this.panelEx1.Controls.Add(this.labelX4);
-            this.panelEx1.Controls.Add(this.textBoxX4);
-            this.panelEx1.Controls.Add(this.labelX3);
-            this.panelEx1.Controls.Add(this.textBoxX3);
-            this.panelEx1.Controls.Add(this.labelX2);
-            this.panelEx1.Controls.Add(this.textBoxX2);
-            this.panelEx1.Controls.Add(this.labelX1);
-            this.panelEx1.Controls.Add(this.textBoxX1);
-            this.panelEx1.Location = new System.Drawing.Point(431, 53);
-            this.panelEx1.Name = "panelEx1";
-            this.panelEx1.Size = new System.Drawing.Size(272, 249);
-            this.panelEx1.Style.Alignment = System.Drawing.StringAlignment.Center;
-            this.panelEx1.Style.BackColor1.ColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.BarBackground;
-            this.panelEx1.Style.Border = DevComponents.DotNetBar.eBorderType.SingleLine;
-            this.panelEx1.Style.BorderColor.ColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.PanelBorder;
-            this.panelEx1.Style.ForeColor.ColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.PanelText;
-            this.panelEx1.Style.GradientAngle = 90;
-            this.panelEx1.TabIndex = 0;
-            // 
-            // ui_LabelX_localAvaliable
-            // 
-            // 
-            // 
-            // 
-            this.ui_LabelX_localAvaliable.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-            this.ui_LabelX_localAvaliable.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ui_LabelX_localAvaliable.ForeColor = System.Drawing.Color.Black;
-            this.ui_LabelX_localAvaliable.Location = new System.Drawing.Point(116, 34);
-            this.ui_LabelX_localAvaliable.Name = "ui_LabelX_localAvaliable";
-            this.ui_LabelX_localAvaliable.PaddingRight = 6;
-            this.ui_LabelX_localAvaliable.Size = new System.Drawing.Size(153, 32);
-            this.ui_LabelX_localAvaliable.TabIndex = 24;
-            this.ui_LabelX_localAvaliable.Text = "avaliable";
-            this.ui_LabelX_localAvaliable.TextAlignment = System.Drawing.StringAlignment.Far;
-            // 
-            // checkBoxX1
-            // 
-            // 
-            // 
-            // 
-            this.checkBoxX1.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-            this.checkBoxX1.Checked = true;
-            this.checkBoxX1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxX1.CheckValue = "Y";
-            this.checkBoxX1.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxX1.Location = new System.Drawing.Point(116, 180);
-            this.checkBoxX1.Name = "checkBoxX1";
-            this.checkBoxX1.Size = new System.Drawing.Size(100, 23);
-            this.checkBoxX1.Style = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
-            this.checkBoxX1.TabIndex = 4;
-            this.checkBoxX1.Text = "Save me";
-            // 
-            // ui_buttonX_localConnect
-            // 
-            this.ui_buttonX_localConnect.AccessibleRole = System.Windows.Forms.AccessibleRole.PushButton;
-            this.ui_buttonX_localConnect.ColorTable = DevComponents.DotNetBar.eButtonColor.OrangeWithBackground;
-            this.ui_buttonX_localConnect.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ui_buttonX_localConnect.Location = new System.Drawing.Point(60, 212);
-            this.ui_buttonX_localConnect.Name = "ui_buttonX_localConnect";
-            this.ui_buttonX_localConnect.Size = new System.Drawing.Size(144, 29);
-            this.ui_buttonX_localConnect.Style = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
-            this.ui_buttonX_localConnect.TabIndex = 5;
-            this.ui_buttonX_localConnect.Text = "Connect to Local DB";
-            this.ui_buttonX_localConnect.Click += new System.EventHandler(this.ui_buttonX_localConnect_Click);
-            // 
-            // labelX5
-            // 
-            // 
-            // 
-            // 
-            this.labelX5.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-            this.labelX5.Dock = System.Windows.Forms.DockStyle.Top;
-            this.labelX5.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelX5.ForeColor = System.Drawing.Color.Black;
-            this.labelX5.Location = new System.Drawing.Point(0, 0);
-            this.labelX5.Name = "labelX5";
-            this.labelX5.PaddingLeft = 6;
-            this.labelX5.Size = new System.Drawing.Size(272, 32);
-            this.labelX5.TabIndex = 19;
-            this.labelX5.Text = "LOCAL DB SETTINGS";
-            // 
-            // labelX4
-            // 
-            // 
-            // 
-            // 
-            this.labelX4.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-            this.labelX4.ForeColor = System.Drawing.Color.Black;
-            this.labelX4.Location = new System.Drawing.Point(35, 152);
-            this.labelX4.Name = "labelX4";
-            this.labelX4.Size = new System.Drawing.Size(75, 20);
-            this.labelX4.TabIndex = 18;
-            this.labelX4.Text = "password";
-            this.labelX4.TextAlignment = System.Drawing.StringAlignment.Far;
-            // 
-            // textBoxX4
-            // 
-            this.textBoxX4.BackColor = System.Drawing.Color.White;
-            // 
-            // 
-            // 
-            this.textBoxX4.Border.BorderLeftColor = System.Drawing.Color.Green;
-            this.textBoxX4.Border.BorderLeftWidth = 3;
-            this.textBoxX4.Border.Class = "TextBoxBorder";
-            this.textBoxX4.Border.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-            this.textBoxX4.ForeColor = System.Drawing.Color.Black;
-            this.textBoxX4.Location = new System.Drawing.Point(116, 152);
-            this.textBoxX4.Name = "textBoxX4";
-            this.textBoxX4.PasswordChar = '*';
-            this.textBoxX4.Size = new System.Drawing.Size(128, 22);
-            this.textBoxX4.TabIndex = 3;
-            // 
-            // labelX3
-            // 
-            // 
-            // 
-            // 
-            this.labelX3.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-            this.labelX3.ForeColor = System.Drawing.Color.Black;
-            this.labelX3.Location = new System.Drawing.Point(35, 126);
-            this.labelX3.Name = "labelX3";
-            this.labelX3.Size = new System.Drawing.Size(75, 20);
-            this.labelX3.TabIndex = 16;
-            this.labelX3.Text = "user";
-            this.labelX3.TextAlignment = System.Drawing.StringAlignment.Far;
-            // 
-            // textBoxX3
-            // 
-            this.textBoxX3.BackColor = System.Drawing.Color.White;
-            // 
-            // 
-            // 
-            this.textBoxX3.Border.BorderLeftColor = System.Drawing.Color.Green;
-            this.textBoxX3.Border.BorderLeftWidth = 3;
-            this.textBoxX3.Border.Class = "TextBoxBorder";
-            this.textBoxX3.Border.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-            this.textBoxX3.ForeColor = System.Drawing.Color.Black;
-            this.textBoxX3.Location = new System.Drawing.Point(116, 126);
-            this.textBoxX3.Name = "textBoxX3";
-            this.textBoxX3.Size = new System.Drawing.Size(128, 22);
-            this.textBoxX3.TabIndex = 2;
-            // 
-            // labelX2
-            // 
-            // 
-            // 
-            // 
-            this.labelX2.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-            this.labelX2.ForeColor = System.Drawing.Color.Black;
-            this.labelX2.Location = new System.Drawing.Point(35, 100);
-            this.labelX2.Name = "labelX2";
-            this.labelX2.Size = new System.Drawing.Size(75, 20);
-            this.labelX2.TabIndex = 14;
-            this.labelX2.Text = "database";
-            this.labelX2.TextAlignment = System.Drawing.StringAlignment.Far;
-            // 
-            // textBoxX2
-            // 
-            this.textBoxX2.BackColor = System.Drawing.Color.White;
-            // 
-            // 
-            // 
-            this.textBoxX2.Border.BorderLeftColor = System.Drawing.Color.Green;
-            this.textBoxX2.Border.BorderLeftWidth = 3;
-            this.textBoxX2.Border.Class = "TextBoxBorder";
-            this.textBoxX2.Border.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-            this.textBoxX2.ForeColor = System.Drawing.Color.Black;
-            this.textBoxX2.Location = new System.Drawing.Point(116, 100);
-            this.textBoxX2.Name = "textBoxX2";
-            this.textBoxX2.Size = new System.Drawing.Size(128, 22);
-            this.textBoxX2.TabIndex = 1;
-            this.textBoxX2.Text = "cqg_info";
-            // 
-            // labelX1
-            // 
-            // 
-            // 
-            // 
-            this.labelX1.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-            this.labelX1.ForeColor = System.Drawing.Color.Black;
-            this.labelX1.Location = new System.Drawing.Point(35, 74);
-            this.labelX1.Name = "labelX1";
-            this.labelX1.Size = new System.Drawing.Size(75, 20);
-            this.labelX1.TabIndex = 12;
-            this.labelX1.Text = "host";
-            this.labelX1.TextAlignment = System.Drawing.StringAlignment.Far;
-            // 
-            // textBoxX1
-            // 
-            this.textBoxX1.BackColor = System.Drawing.Color.White;
-            // 
-            // 
-            // 
-            this.textBoxX1.Border.BorderLeftColor = System.Drawing.Color.Green;
-            this.textBoxX1.Border.BorderLeftWidth = 3;
-            this.textBoxX1.Border.Class = "TextBoxBorder";
-            this.textBoxX1.Border.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-            this.textBoxX1.ForeColor = System.Drawing.Color.Black;
-            this.textBoxX1.Location = new System.Drawing.Point(116, 74);
-            this.textBoxX1.Name = "textBoxX1";
-            this.textBoxX1.Size = new System.Drawing.Size(128, 22);
-            this.textBoxX1.TabIndex = 0;
-            this.textBoxX1.Text = "localhost";
-            // 
             // metroTabPanel2
             // 
             this.metroTabPanel2.ColorSchemeStyle = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
@@ -730,7 +431,6 @@
             // 
             this.metroTabPanel2.StyleMouseOver.CornerType = DevComponents.DotNetBar.eCornerType.Square;
             this.metroTabPanel2.TabIndex = 2;
-            this.metroTabPanel2.Visible = false;
             // 
             // tableLayoutPanel1
             // 
@@ -792,11 +492,13 @@
             // 
             // 
             this.labelX7.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+            this.labelX7.Dock = System.Windows.Forms.DockStyle.Top;
             this.labelX7.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelX7.ForeColor = System.Drawing.Color.Black;
-            this.labelX7.Location = new System.Drawing.Point(10, 13);
+            this.labelX7.Location = new System.Drawing.Point(0, 0);
             this.labelX7.Name = "labelX7";
-            this.labelX7.Size = new System.Drawing.Size(118, 32);
+            this.labelX7.PaddingLeft = 6;
+            this.labelX7.Size = new System.Drawing.Size(221, 32);
             this.labelX7.TabIndex = 20;
             this.labelX7.Text = "LISTS";
             // 
@@ -1296,11 +998,13 @@
             // 
             // 
             this.labelX8.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+            this.labelX8.Dock = System.Windows.Forms.DockStyle.Top;
             this.labelX8.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelX8.ForeColor = System.Drawing.Color.Black;
-            this.labelX8.Location = new System.Drawing.Point(12, 12);
+            this.labelX8.Location = new System.Drawing.Point(0, 0);
             this.labelX8.Name = "labelX8";
-            this.labelX8.Size = new System.Drawing.Size(124, 32);
+            this.labelX8.PaddingLeft = 6;
+            this.labelX8.Size = new System.Drawing.Size(414, 32);
             this.labelX8.TabIndex = 20;
             this.labelX8.Text = "INPUTS";
             // 
@@ -1327,11 +1031,13 @@
             // 
             // 
             this.labelX6.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+            this.labelX6.Dock = System.Windows.Forms.DockStyle.Top;
             this.labelX6.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelX6.ForeColor = System.Drawing.Color.Black;
-            this.labelX6.Location = new System.Drawing.Point(10, 13);
+            this.labelX6.Location = new System.Drawing.Point(0, 0);
             this.labelX6.Name = "labelX6";
-            this.labelX6.Size = new System.Drawing.Size(124, 32);
+            this.labelX6.PaddingLeft = 6;
+            this.labelX6.Size = new System.Drawing.Size(220, 32);
             this.labelX6.TabIndex = 20;
             this.labelX6.Text = "SYMBOLS";
             // 
@@ -1421,6 +1127,309 @@
             this.deleteSymbolToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.deleteSymbolToolStripMenuItem.Text = "Delete symbol";
             this.deleteSymbolToolStripMenuItem.Visible = false;
+            // 
+            // metroTabPanel1
+            // 
+            this.metroTabPanel1.ColorSchemeStyle = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
+            this.metroTabPanel1.Controls.Add(this.panelEx5);
+            this.metroTabPanel1.Controls.Add(this.panelEx1);
+            this.metroTabPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.metroTabPanel1.Location = new System.Drawing.Point(0, 51);
+            this.metroTabPanel1.Name = "metroTabPanel1";
+            this.metroTabPanel1.Padding = new System.Windows.Forms.Padding(3, 0, 3, 3);
+            this.metroTabPanel1.Size = new System.Drawing.Size(879, 407);
+            // 
+            // 
+            // 
+            this.metroTabPanel1.Style.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+            // 
+            // 
+            // 
+            this.metroTabPanel1.StyleMouseDown.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+            // 
+            // 
+            // 
+            this.metroTabPanel1.StyleMouseOver.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+            this.metroTabPanel1.StyleMouseOver.TextColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.metroTabPanel1.TabIndex = 0;
+            this.metroTabPanel1.Visible = false;
+            // 
+            // panelEx5
+            // 
+            this.panelEx5.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.panelEx5.CanvasColor = System.Drawing.SystemColors.Control;
+            this.panelEx5.ColorSchemeStyle = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
+            this.panelEx5.Controls.Add(this.ui_LabelX_sharedAvaliable);
+            this.panelEx5.Controls.Add(this.ui_buttonX_shareConnect);
+            this.panelEx5.Controls.Add(this.labelX16);
+            this.panelEx5.Location = new System.Drawing.Point(153, 53);
+            this.panelEx5.Name = "panelEx5";
+            this.panelEx5.Size = new System.Drawing.Size(272, 249);
+            this.panelEx5.Style.Alignment = System.Drawing.StringAlignment.Center;
+            this.panelEx5.Style.BackColor1.ColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.BarBackground;
+            this.panelEx5.Style.Border = DevComponents.DotNetBar.eBorderType.SingleLine;
+            this.panelEx5.Style.BorderColor.ColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.PanelBorder;
+            this.panelEx5.Style.ForeColor.ColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.PanelText;
+            this.panelEx5.Style.GradientAngle = 90;
+            this.panelEx5.TabIndex = 17;
+            // 
+            // ui_LabelX_sharedAvaliable
+            // 
+            // 
+            // 
+            // 
+            this.ui_LabelX_sharedAvaliable.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+            this.ui_LabelX_sharedAvaliable.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ui_LabelX_sharedAvaliable.ForeColor = System.Drawing.Color.Black;
+            this.ui_LabelX_sharedAvaliable.Location = new System.Drawing.Point(113, 34);
+            this.ui_LabelX_sharedAvaliable.Name = "ui_LabelX_sharedAvaliable";
+            this.ui_LabelX_sharedAvaliable.PaddingRight = 6;
+            this.ui_LabelX_sharedAvaliable.Size = new System.Drawing.Size(156, 32);
+            this.ui_LabelX_sharedAvaliable.TabIndex = 23;
+            this.ui_LabelX_sharedAvaliable.Text = "avaliable";
+            this.ui_LabelX_sharedAvaliable.TextAlignment = System.Drawing.StringAlignment.Far;
+            // 
+            // ui_buttonX_shareConnect
+            // 
+            this.ui_buttonX_shareConnect.AccessibleRole = System.Windows.Forms.AccessibleRole.PushButton;
+            this.ui_buttonX_shareConnect.ColorTable = DevComponents.DotNetBar.eButtonColor.OrangeWithBackground;
+            this.ui_buttonX_shareConnect.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ui_buttonX_shareConnect.Location = new System.Drawing.Point(49, 212);
+            this.ui_buttonX_shareConnect.Name = "ui_buttonX_shareConnect";
+            this.ui_buttonX_shareConnect.Size = new System.Drawing.Size(144, 29);
+            this.ui_buttonX_shareConnect.Style = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
+            this.ui_buttonX_shareConnect.TabIndex = 21;
+            this.ui_buttonX_shareConnect.Text = "Connect to Share DB";
+            this.ui_buttonX_shareConnect.Click += new System.EventHandler(this.ui_buttonX_shareConnect_Click);
+            // 
+            // labelX16
+            // 
+            // 
+            // 
+            // 
+            this.labelX16.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+            this.labelX16.Dock = System.Windows.Forms.DockStyle.Top;
+            this.labelX16.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelX16.ForeColor = System.Drawing.Color.Black;
+            this.labelX16.Location = new System.Drawing.Point(0, 0);
+            this.labelX16.Name = "labelX16";
+            this.labelX16.PaddingLeft = 6;
+            this.labelX16.Size = new System.Drawing.Size(272, 32);
+            this.labelX16.TabIndex = 20;
+            this.labelX16.Text = "SHARED DB";
+            // 
+            // panelEx1
+            // 
+            this.panelEx1.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.panelEx1.CanvasColor = System.Drawing.SystemColors.Control;
+            this.panelEx1.ColorSchemeStyle = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
+            this.panelEx1.Controls.Add(this.ui_LabelX_localAvaliable);
+            this.panelEx1.Controls.Add(this.checkBoxX1);
+            this.panelEx1.Controls.Add(this.ui_buttonX_localConnect);
+            this.panelEx1.Controls.Add(this.labelX5);
+            this.panelEx1.Controls.Add(this.labelX4);
+            this.panelEx1.Controls.Add(this.textBoxX4);
+            this.panelEx1.Controls.Add(this.labelX3);
+            this.panelEx1.Controls.Add(this.textBoxX3);
+            this.panelEx1.Controls.Add(this.labelX2);
+            this.panelEx1.Controls.Add(this.textBoxX2);
+            this.panelEx1.Controls.Add(this.labelX1);
+            this.panelEx1.Controls.Add(this.textBoxX1);
+            this.panelEx1.Location = new System.Drawing.Point(431, 53);
+            this.panelEx1.Name = "panelEx1";
+            this.panelEx1.Size = new System.Drawing.Size(272, 249);
+            this.panelEx1.Style.Alignment = System.Drawing.StringAlignment.Center;
+            this.panelEx1.Style.BackColor1.ColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.BarBackground;
+            this.panelEx1.Style.Border = DevComponents.DotNetBar.eBorderType.SingleLine;
+            this.panelEx1.Style.BorderColor.ColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.PanelBorder;
+            this.panelEx1.Style.ForeColor.ColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.PanelText;
+            this.panelEx1.Style.GradientAngle = 90;
+            this.panelEx1.TabIndex = 0;
+            // 
+            // ui_LabelX_localAvaliable
+            // 
+            // 
+            // 
+            // 
+            this.ui_LabelX_localAvaliable.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+            this.ui_LabelX_localAvaliable.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ui_LabelX_localAvaliable.ForeColor = System.Drawing.Color.Black;
+            this.ui_LabelX_localAvaliable.Location = new System.Drawing.Point(116, 34);
+            this.ui_LabelX_localAvaliable.Name = "ui_LabelX_localAvaliable";
+            this.ui_LabelX_localAvaliable.PaddingRight = 6;
+            this.ui_LabelX_localAvaliable.Size = new System.Drawing.Size(153, 32);
+            this.ui_LabelX_localAvaliable.TabIndex = 24;
+            this.ui_LabelX_localAvaliable.Text = "avaliable";
+            this.ui_LabelX_localAvaliable.TextAlignment = System.Drawing.StringAlignment.Far;
+            // 
+            // checkBoxX1
+            // 
+            // 
+            // 
+            // 
+            this.checkBoxX1.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+            this.checkBoxX1.Checked = true;
+            this.checkBoxX1.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxX1.CheckValue = "Y";
+            this.checkBoxX1.ForeColor = System.Drawing.Color.Black;
+            this.checkBoxX1.Location = new System.Drawing.Point(116, 180);
+            this.checkBoxX1.Name = "checkBoxX1";
+            this.checkBoxX1.Size = new System.Drawing.Size(100, 23);
+            this.checkBoxX1.Style = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
+            this.checkBoxX1.TabIndex = 4;
+            this.checkBoxX1.Text = "Save me";
+            // 
+            // ui_buttonX_localConnect
+            // 
+            this.ui_buttonX_localConnect.AccessibleRole = System.Windows.Forms.AccessibleRole.PushButton;
+            this.ui_buttonX_localConnect.ColorTable = DevComponents.DotNetBar.eButtonColor.OrangeWithBackground;
+            this.ui_buttonX_localConnect.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ui_buttonX_localConnect.Location = new System.Drawing.Point(60, 212);
+            this.ui_buttonX_localConnect.Name = "ui_buttonX_localConnect";
+            this.ui_buttonX_localConnect.Size = new System.Drawing.Size(144, 29);
+            this.ui_buttonX_localConnect.Style = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
+            this.ui_buttonX_localConnect.TabIndex = 5;
+            this.ui_buttonX_localConnect.Text = "Connect to Local DB";
+            this.ui_buttonX_localConnect.Click += new System.EventHandler(this.ui_buttonX_localConnect_Click);
+            // 
+            // labelX5
+            // 
+            // 
+            // 
+            // 
+            this.labelX5.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+            this.labelX5.Dock = System.Windows.Forms.DockStyle.Top;
+            this.labelX5.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelX5.ForeColor = System.Drawing.Color.Black;
+            this.labelX5.Location = new System.Drawing.Point(0, 0);
+            this.labelX5.Name = "labelX5";
+            this.labelX5.PaddingLeft = 6;
+            this.labelX5.Size = new System.Drawing.Size(272, 32);
+            this.labelX5.TabIndex = 19;
+            this.labelX5.Text = "LOCAL DB SETTINGS";
+            // 
+            // labelX4
+            // 
+            // 
+            // 
+            // 
+            this.labelX4.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+            this.labelX4.ForeColor = System.Drawing.Color.Black;
+            this.labelX4.Location = new System.Drawing.Point(35, 152);
+            this.labelX4.Name = "labelX4";
+            this.labelX4.Size = new System.Drawing.Size(75, 20);
+            this.labelX4.TabIndex = 18;
+            this.labelX4.Text = "password";
+            this.labelX4.TextAlignment = System.Drawing.StringAlignment.Far;
+            // 
+            // textBoxX4
+            // 
+            this.textBoxX4.BackColor = System.Drawing.Color.White;
+            // 
+            // 
+            // 
+            this.textBoxX4.Border.BorderLeftColor = System.Drawing.Color.Green;
+            this.textBoxX4.Border.BorderLeftWidth = 3;
+            this.textBoxX4.Border.Class = "TextBoxBorder";
+            this.textBoxX4.Border.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+            this.textBoxX4.ForeColor = System.Drawing.Color.Black;
+            this.textBoxX4.Location = new System.Drawing.Point(116, 152);
+            this.textBoxX4.Name = "textBoxX4";
+            this.textBoxX4.PasswordChar = '*';
+            this.textBoxX4.Size = new System.Drawing.Size(128, 22);
+            this.textBoxX4.TabIndex = 3;
+            // 
+            // labelX3
+            // 
+            // 
+            // 
+            // 
+            this.labelX3.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+            this.labelX3.ForeColor = System.Drawing.Color.Black;
+            this.labelX3.Location = new System.Drawing.Point(35, 126);
+            this.labelX3.Name = "labelX3";
+            this.labelX3.Size = new System.Drawing.Size(75, 20);
+            this.labelX3.TabIndex = 16;
+            this.labelX3.Text = "user";
+            this.labelX3.TextAlignment = System.Drawing.StringAlignment.Far;
+            // 
+            // textBoxX3
+            // 
+            this.textBoxX3.BackColor = System.Drawing.Color.White;
+            // 
+            // 
+            // 
+            this.textBoxX3.Border.BorderLeftColor = System.Drawing.Color.Green;
+            this.textBoxX3.Border.BorderLeftWidth = 3;
+            this.textBoxX3.Border.Class = "TextBoxBorder";
+            this.textBoxX3.Border.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+            this.textBoxX3.ForeColor = System.Drawing.Color.Black;
+            this.textBoxX3.Location = new System.Drawing.Point(116, 126);
+            this.textBoxX3.Name = "textBoxX3";
+            this.textBoxX3.Size = new System.Drawing.Size(128, 22);
+            this.textBoxX3.TabIndex = 2;
+            // 
+            // labelX2
+            // 
+            // 
+            // 
+            // 
+            this.labelX2.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+            this.labelX2.ForeColor = System.Drawing.Color.Black;
+            this.labelX2.Location = new System.Drawing.Point(35, 100);
+            this.labelX2.Name = "labelX2";
+            this.labelX2.Size = new System.Drawing.Size(75, 20);
+            this.labelX2.TabIndex = 14;
+            this.labelX2.Text = "database";
+            this.labelX2.TextAlignment = System.Drawing.StringAlignment.Far;
+            // 
+            // textBoxX2
+            // 
+            this.textBoxX2.BackColor = System.Drawing.Color.White;
+            // 
+            // 
+            // 
+            this.textBoxX2.Border.BorderLeftColor = System.Drawing.Color.Green;
+            this.textBoxX2.Border.BorderLeftWidth = 3;
+            this.textBoxX2.Border.Class = "TextBoxBorder";
+            this.textBoxX2.Border.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+            this.textBoxX2.ForeColor = System.Drawing.Color.Black;
+            this.textBoxX2.Location = new System.Drawing.Point(116, 100);
+            this.textBoxX2.Name = "textBoxX2";
+            this.textBoxX2.Size = new System.Drawing.Size(128, 22);
+            this.textBoxX2.TabIndex = 1;
+            this.textBoxX2.Text = "cqg_info";
+            // 
+            // labelX1
+            // 
+            // 
+            // 
+            // 
+            this.labelX1.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+            this.labelX1.ForeColor = System.Drawing.Color.Black;
+            this.labelX1.Location = new System.Drawing.Point(35, 74);
+            this.labelX1.Name = "labelX1";
+            this.labelX1.Size = new System.Drawing.Size(75, 20);
+            this.labelX1.TabIndex = 12;
+            this.labelX1.Text = "host";
+            this.labelX1.TextAlignment = System.Drawing.StringAlignment.Far;
+            // 
+            // textBoxX1
+            // 
+            this.textBoxX1.BackColor = System.Drawing.Color.White;
+            // 
+            // 
+            // 
+            this.textBoxX1.Border.BorderLeftColor = System.Drawing.Color.Green;
+            this.textBoxX1.Border.BorderLeftWidth = 3;
+            this.textBoxX1.Border.Class = "TextBoxBorder";
+            this.textBoxX1.Border.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+            this.textBoxX1.ForeColor = System.Drawing.Color.Black;
+            this.textBoxX1.Location = new System.Drawing.Point(116, 74);
+            this.textBoxX1.Name = "textBoxX1";
+            this.textBoxX1.Size = new System.Drawing.Size(128, 22);
+            this.textBoxX1.TabIndex = 0;
+            this.textBoxX1.Text = "localhost";
             // 
             // metroTabPanel4
             // 
@@ -1525,6 +1534,7 @@
             // 
             // metroTabItem2
             // 
+            this.metroTabItem2.Checked = true;
             this.metroTabItem2.Name = "metroTabItem2";
             this.metroTabItem2.Panel = this.metroTabPanel2;
             this.metroTabItem2.Text = "&COLLECT DATA";
@@ -1532,7 +1542,6 @@
             // 
             // metroTabItem3
             // 
-            this.metroTabItem3.Checked = true;
             this.metroTabItem3.Name = "metroTabItem3";
             this.metroTabItem3.Panel = this.metroTabPanel3;
             this.metroTabItem3.Text = "&MISSING BARS";
@@ -1697,9 +1706,6 @@
             this.metroTabPanel3.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.contextMenuStripTables.ResumeLayout(false);
-            this.metroTabPanel1.ResumeLayout(false);
-            this.panelEx5.ResumeLayout(false);
-            this.panelEx1.ResumeLayout(false);
             this.metroTabPanel2.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.panelEx3.ResumeLayout(false);
@@ -1716,6 +1722,9 @@
             this.grbDataCollectType.PerformLayout();
             this.panelEx2.ResumeLayout(false);
             this.contextMenuStripSymbols.ResumeLayout(false);
+            this.metroTabPanel1.ResumeLayout(false);
+            this.panelEx5.ResumeLayout(false);
+            this.panelEx1.ResumeLayout(false);
             this.metroTabPanel4.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
             this.contextMenuStripLists.ResumeLayout(false);
@@ -1833,6 +1842,7 @@
         private DevComponents.DotNetBar.LabelX labelX16;
         private DevComponents.DotNetBar.LabelX ui_LabelX_sharedAvaliable;
         private DevComponents.DotNetBar.LabelX ui_LabelX_localAvaliable;
+        private IScsServiceClient<IDataAdminService> client;
     }
 }
 

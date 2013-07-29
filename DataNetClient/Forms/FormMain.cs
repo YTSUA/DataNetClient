@@ -6,16 +6,13 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
 using CQG;
-using System.Globalization;
 using System.Threading;
 using DataAdminCommonLib;
 using DataNetClient.Properties;
 using DataNetClient.Structs;
 using DevComponents.DotNetBar;
-using System.Diagnostics;
 using Hik.Communication.Scs.Communication.EndPoints.Tcp;
 using Hik.Communication.ScsServices.Client;
-using DataAdminCommonLib;
 
 
 namespace DataNetClient.Forms
@@ -32,19 +29,14 @@ namespace DataNetClient.Forms
         private readonly MetroBillCommands _commands; // All application commands
         private readonly StartControl _startControl;
         //internal DbSelector dbSel;
-        private DataCollector dataCollector;
-        private CQGCEL CEL;
-        private bool IsStartedCQG;
+        private DataCollector _dataCollector;
+        private CQGCEL _cel;
+        private bool _isStartedCqg;
         private Dictionary<String, TimeRange> customeListsDict;
-        private DateTime endTime;
-        private DateTime startTime;
-        private List<Brush> lbxColors;
-        public bool CreateNewList;
-        public Logger logger;
-        public List<string> glTables = new List<string>();
-        public Semaphore pool1 { get; set; }
-        public Semaphore waitForEndCollecting;
-        public Semaphore waitForEndCollectingList;
+        private DateTime _endTime;
+        private DateTime _startTime;
+        private List<Brush> _lbxColors;
+        private Logger _logger;
 
         private ControlNewSymbol _addSymbolControl;
         private ControlEditList _editListControl;
@@ -63,12 +55,11 @@ namespace DataNetClient.Forms
         #region CLIENT-SERVER VARIABLES
 
         private DataClientClass _client;
-        private IScsServiceClient<IDataAdminService> client;
 
         #endregion
 
         public FormMain()
-        {
+        {            
             SuspendLayout();
 
             InitializeComponent();
@@ -262,7 +253,7 @@ namespace DataNetClient.Forms
         }
     
 
-    public void BlockedByAdmin(object sender, object msg)
+        public void BlockedByAdmin(object sender, object msg)
         {
             _client.BlockedByAdmin = true;
         }
@@ -290,7 +281,7 @@ namespace DataNetClient.Forms
 
             if (_client.ConnectedToSharedDb)
             {
-                RefreshGroups();
+                RefreshSymbols();
                 RefreshGroups();
             }
             //todo refresh symbol list
@@ -340,9 +331,9 @@ namespace DataNetClient.Forms
                 ClientDataManager.ConnectionStatusChanged += ClientDataManager_ConnectionStatusChanged;
                 UpdateControlsSizeAndLocation();
 
-                logger = Logger.GetInstance(listViewLogger);
-                logger.LogAdd("Application Start", Category.Information);
-                dataCollector = new DataCollector(logger);
+                _logger = Logger.GetInstance(listViewLogger);
+                _logger.LogAdd("Application Start", Category.Information);
+                _dataCollector = new DataCollector(_logger);
 
                 textBoxX1.Text = Settings.Default.Host;
                 textBoxX2.Text = Settings.Default.DB;
@@ -367,34 +358,34 @@ namespace DataNetClient.Forms
                 
                 resetColorMarks();
 
-                CEL = new CQGCEL();
-                CEL.APIConfiguration.TimeZoneCode = eTimeZone.tzGMT;
-                CEL.APIConfiguration.ReadyStatusCheck = eReadyStatusCheck.rscOff;
-                CEL.APIConfiguration.CollectionsThrowException = false;
-                CEL.APIConfiguration.LogSeverity = eLogSeverity.lsDebug;
-                CEL.APIConfiguration.MessageProcessingTimeout = 30000;
+                _cel = new CQGCEL();
+                _cel.APIConfiguration.TimeZoneCode = eTimeZone.tzGMT;
+                _cel.APIConfiguration.ReadyStatusCheck = eReadyStatusCheck.rscOff;
+                _cel.APIConfiguration.CollectionsThrowException = false;
+                _cel.APIConfiguration.LogSeverity = eLogSeverity.lsDebug;
+                _cel.APIConfiguration.MessageProcessingTimeout = 30000;
 
-                CEL.DataConnectionStatusChanged += CEL_DataConnectionStatusChanged;
+                _cel.DataConnectionStatusChanged += CEL_DataConnectionStatusChanged;
                 CEL_DataConnectionStatusChanged(eConnectionStatus.csConnectionDown);
-                CEL.DataError += CEL_DataError;
-                CEL.TimedBarsResolved += CEL_TimedBarsResolved;
-                CEL.IncorrectSymbol += CEL_IncorrectSymbol;
-                CEL.HistoricalSessionsResolved += CEL_HistoricalSessionsResolved;
-                CEL.TicksResolved += CQG_TicksResolved;
-                CEL.InstrumentSubscribed += CEL_InstrumentSubscribed;                
+                _cel.DataError += CEL_DataError;
+                _cel.TimedBarsResolved += CEL_TimedBarsResolved;
+                _cel.IncorrectSymbol += CEL_IncorrectSymbol;
+                _cel.HistoricalSessionsResolved += CEL_HistoricalSessionsResolved;
+                _cel.TicksResolved += CQG_TicksResolved;
+                _cel.InstrumentSubscribed += CEL_InstrumentSubscribed;                
 
-                CEL.Startup();
+                _cel.Startup();
 
                 //currStatus = DEFAULT_STATUS;
                 dateTimeInputStart.Value = DateTime.Now.AddDays(-1);
                 dateTimeInputEnd.Value = DateTime.Now;
                 listBoxSymbols.DrawItem += listBox1_DrawItem;                
 
-                dataCollector.Subscribe(ui__status_labelItem_status,listBoxSymbols,checkedListBoxLists,progressBarItemCollecting, listViewResult);
+                _dataCollector.Subscribe(ui__status_labelItem_status,listBoxSymbols,checkedListBoxLists,progressBarItemCollecting, listViewResult);
             }
             catch (Exception exception)
             {
-                logger.LogAdd("Error in loading. " + exception.Message, Category.Error);                
+                _logger.LogAdd("Error in loading. " + exception.Message, Category.Error);                
                 Close();
             }
         }
@@ -404,12 +395,12 @@ namespace DataNetClient.Forms
 
         void CEL_InstrumentSubscribed(string symbol, CQGInstrument cqg_instrument)
         {
-            dataCollector.SessionAdd(cqg_instrument.Sessions, symbol);
+            _dataCollector.SessionAdd(cqg_instrument.Sessions, symbol);
         }         
 
         void CEL_HistoricalSessionsResolved(CQGSessionsCollection cqg_historical_sessions, CQGHistoricalSessionsRequest cqg_historical_sessions_request, CQGError cqg_error)
         {
-            dataCollector.HolidaysAdd(cqg_historical_sessions, cqg_historical_sessions_request.Symbol);        
+            _dataCollector.HolidaysAdd(cqg_historical_sessions, cqg_historical_sessions_request.Symbol);        
         }
 
         void CEL_DataConnectionStatusChanged(eConnectionStatus eConnectionStatus)
@@ -435,27 +426,27 @@ namespace DataNetClient.Forms
                     }
                 }
                 //MessageBox.Show(error_description, "DataNet", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
-                logger.LogAdd(error_description, Category.Error);
+                _logger.LogAdd(error_description, Category.Error);
             }
             catch (Exception exception)
             {
-                logger.LogAdd("CEL data eroor. "+exception, Category.Error);
+                _logger.LogAdd("CEL data eroor. "+exception, Category.Error);
             }                       
         }
        
         void CEL_IncorrectSymbol(string symbol_)
         {            
-            logger.LogAdd("Incorrect symbol", Category.Warning);
+            _logger.LogAdd("Incorrect symbol", Category.Warning);
         }
 
         void CQG_TicksResolved(CQGTicks cqg_ticks, CQGError cqg_error)
         {
-            dataCollector.TicksAdd(cqg_ticks, cqg_error);
+            _dataCollector.TicksAdd(cqg_ticks, cqg_error);
         }
 
         void CEL_TimedBarsResolved(CQGTimedBars cqg_timed_bars, CQGError cqg_error)
         {
-            dataCollector.BarsAdd(cqg_timed_bars, cqg_error);
+            _dataCollector.BarsAdd(cqg_timed_bars, cqg_error);
         }
           
     #endregion
@@ -565,10 +556,10 @@ namespace DataNetClient.Forms
 
         public void resetColorMarks()
         {
-            lbxColors = new List<Brush>();
+            _lbxColors = new List<Brush>();
             for (int i = 0; i < listBoxSymbols.Items.Count; i++)
             {
-                lbxColors.Add(Brushes.Black);
+                _lbxColors.Add(Brushes.Black);
             }
         }
 
@@ -579,7 +570,7 @@ namespace DataNetClient.Forms
             e.DrawBackground();
             {
                 e.Graphics.DrawString(listBoxSymbols.Items[e.Index].ToString(),
-                                        e.Font, dataCollector.getColor(listBoxSymbols.Items[e.Index].ToString()), e.Bounds, StringFormat.GenericDefault);
+                                        e.Font, _dataCollector.getColor(listBoxSymbols.Items[e.Index].ToString()), e.Bounds, StringFormat.GenericDefault);
             }
             e.DrawFocusRectangle();
             //changedStatus = false;
@@ -594,11 +585,11 @@ namespace DataNetClient.Forms
                 int index = listBoxSymbols.FindString(symbol);
                 if (index < 0) return;
                 if (state == eSymbolOperatiomState.ERROR_STATUS)
-                    lbxColors[index] = Brushes.Red;
+                    _lbxColors[index] = Brushes.Red;
                 if (state == eSymbolOperatiomState.SECESS_STATUS)
-                    lbxColors[index] = Brushes.LimeGreen;
+                    _lbxColors[index] = Brushes.LimeGreen;
                 if (state == eSymbolOperatiomState.DEFAULT_STATUS)
-                    lbxColors[index] = Brushes.Black;
+                    _lbxColors[index] = Brushes.Black;
             }
         }
 
@@ -618,14 +609,14 @@ namespace DataNetClient.Forms
                 int sessionFilter = rdb1.Checked ? 1 : 31;
                 string historicalPeriod = cmbHistoricalPeriod.SelectedItem.ToString();
                 
-                dataCollector.BarRequest(CEL, symbols, rangeStart, rangeEnd, sessionFilter, historicalPeriod, continuationType);
+                _dataCollector.BarRequest(_cel, symbols, rangeStart, rangeEnd, sessionFilter, historicalPeriod, continuationType);
             }
             else
             {
                 DateTime rangeStart = dateTimeInputStart.Value.Date;
                 DateTime rangeEnd = dateTimeInputEnd.Value;
 
-                dataCollector.TickRequest(CEL, symbols, rangeStart, rangeEnd, continuationType);
+                _dataCollector.TickRequest(_cel, symbols, rangeStart, rangeEnd, continuationType);
             }           
         }
         private void radioButBars_Click(object sender, EventArgs e)
@@ -802,7 +793,6 @@ namespace DataNetClient.Forms
 
         #region MetroSymbol
 
-        ControlNewSymbol _NewSymbolControl;
         /*
         void NewNewSymbolExecuted(object sender, EventArgs e)
         {
@@ -928,7 +918,7 @@ namespace DataNetClient.Forms
             }            
         }
         */
-        string lastTip;
+        string _lastTip;
         //private TimeSpan step;
         private void listBoxSymbols_MouseMove(object sender, MouseEventArgs e)
         {
@@ -939,16 +929,16 @@ namespace DataNetClient.Forms
                 if (index > -1 && index < listBox.Items.Count)
                 {
                     string tip = listBox.Items[index].ToString();
-                    if (tip != lastTip)
+                    if (tip != _lastTip)
                     {
                         toolTip1.SetToolTip(listBox, tip);
-                        lastTip = tip;
+                        _lastTip = tip;
                     }
                 }
             }
             catch (Exception ex)
             {
-                logger.LogAdd("listBoxSymbols_MouseMove. " + ex.Message, Category.Error);
+                _logger.LogAdd("listBoxSymbols_MouseMove. " + ex.Message, Category.Error);
             }
         }
 
@@ -1056,8 +1046,8 @@ namespace DataNetClient.Forms
         */
         public struct MissedStr
         {
-            public DateTime start;
-            public DateTime end;
+            public DateTime Start;
+            public DateTime End;
         }
         /*
         private bool ExistsTime(IEnumerable<DateTime> aResultDateTimes, DateTime curTime)
@@ -1089,7 +1079,7 @@ namespace DataNetClient.Forms
 
         #region  NEW REGION
 
-        #region Collecting UI
+        #region Collecting & MissingBars UI (buttons)
 
         private void metroTileItemCollect_Click(object sender, EventArgs e)
         {
@@ -1099,11 +1089,11 @@ namespace DataNetClient.Forms
                 return;
             }
 
-            if (dataCollector.IsBusy())
+            if (_dataCollector.IsBusy())
             {
                 return;
             }
-            if (!IsStartedCQG)
+            if (!_isStartedCqg)
             {
                 ui__status_labelItem_status.Text = "Start CQG first, please.";
                 return;
@@ -1121,7 +1111,7 @@ namespace DataNetClient.Forms
             new Thread(() =>
             {
                 Thread.Sleep(1000);
-                dataCollector.WaitEndOfOperation();
+                _dataCollector.WaitEndOfOperation();
                 // if last                    
                 Invoke((Action)delegate
                 {
@@ -1130,7 +1120,7 @@ namespace DataNetClient.Forms
                     //TODO: LoadSymbolList(listBoxSymbols);
 
                     if (checkBoxAutoCheckForMissedBars.Value)
-                        dataCollector.MissingBarRequest(CEL, symbols.ToArray(), (int)nudEndBar.Value, true);
+                        _dataCollector.MissingBarRequest(_cel, symbols.ToArray(), (int)nudEndBar.Value, true);
 
                     //dataCollector.ResetSymbols();
                 });
@@ -1145,11 +1135,11 @@ namespace DataNetClient.Forms
                 ui__status_labelItem_status.Text = "You don't have permissions to do this.";
                 return;
             }
-            if (dataCollector.IsBusy())
+            if (_dataCollector.IsBusy())
             {
                 return;
             }
-            if (!IsStartedCQG)
+            if (!_isStartedCqg)
             {
                 ui__status_labelItem_status.Text = "Start CQG first, please.";
                 return;
@@ -1174,29 +1164,32 @@ namespace DataNetClient.Forms
                     Invoke((Action)delegate
                     {
                         //***********
-                        TimeRange tr = customeListsDict[name.ToString()];
+                        TimeRange tr = new TimeRange{StartTime = DateTime.Today};//ClientDataManager.GetGroups(_client.UserID, )//customeListsDict[name.ToString()];
 
-                        if (!tr.StartTime.Equals(new DateTime()))
+                        if (!tr.StartTime.Equals(DateTime.Today))
                         {
                             //useTimeRange = true;
-                            startTime = tr.StartTime;
-                            endTime = tr.endTime;
+                            _startTime = tr.StartTime;
+                            _endTime = tr.EndTime;
 
-                            dateTimeInputStart.Value = startTime;
-                            dateTimeInputEnd.Value = endTime;
+                            dateTimeInputStart.Value = _startTime;
+                            dateTimeInputEnd.Value = _endTime;
 
                         }
+                        /*
                         eHistoricalPeriod res;
-                        if (Enum.TryParse(tr.strTF_Tyoe, out res))
+                        if (Enum.TryParse(tr.StrTF_Tyoe, out res))
                             cmbHistoricalPeriod.SelectedItem = res;
 
                         else
-                            cmbHistoricalPeriod.SelectedItem = tr.strTF_Tyoe;
+                            cmbHistoricalPeriod.SelectedItem = tr.StrTF_Tyoe;
                         eTimeSeriesContinuationType res1;
-                        if (Enum.TryParse(tr.strContinuationType, out res1))
+                         
+                        if (Enum.TryParse(tr.StrContinuationType, out res1))
                         {
                             cmbContinuationType.SelectedItem = res1;
                         }
+                         * */
                         //***********
 
                         List<String> symbolList = new List<string>();
@@ -1212,7 +1205,7 @@ namespace DataNetClient.Forms
                     });
 
                     Thread.Sleep(1000);
-                    dataCollector.WaitEndOfOperation();
+                    _dataCollector.WaitEndOfOperation();
                     // if last
                     if (listName == checkedListBoxLists.CheckedItems[checkedListBoxLists.CheckedItems.Count - 1])
                     {
@@ -1223,7 +1216,7 @@ namespace DataNetClient.Forms
                             // TODO: dbSel.LoadSymbolList(listBoxSymbols);
 
                             if (checkBoxAutoCheckForMissedBars.Value)
-                                dataCollector.MissingBarRequest(CEL, AllSymbols.ToArray(), (int)nudEndBar.Value);
+                                _dataCollector.MissingBarRequest(_cel, AllSymbols.ToArray(), (int)nudEndBar.Value);
 
                             //dataCollector.ResetSymbols();
                         });
@@ -1242,11 +1235,11 @@ namespace DataNetClient.Forms
                 ui__status_labelItem_status.Text = "You don't have permissions to do this.";
                 return;
             }
-            if (dataCollector.IsBusy())
+            if (_dataCollector.IsBusy())
             {
                 return;
             }
-            if (!IsStartedCQG)
+            if (!_isStartedCqg)
             {
                 ui__status_labelItem_status.Text = "Start CQG first, please.";
                 return;
@@ -1267,7 +1260,7 @@ namespace DataNetClient.Forms
             }
 
 
-            dataCollector.MissingBarRequest(CEL, symbols, (int)nudEndBar.Value);
+            _dataCollector.MissingBarRequest(_cel, symbols, (int)nudEndBar.Value);
         }
 
         #endregion
@@ -1366,22 +1359,20 @@ namespace DataNetClient.Forms
            
         }
 
-
-
         private void CqgConnectionStatusChanged(bool isConnectionUp)
         {
             if (isConnectionUp)
             {
                 _startControl.ui_labelX_CQGstatus.Text = @"CQG started";
                 labelItemStatusCQG.Text = @"CQG started";
-                IsStartedCQG = true;
+                _isStartedCqg = true;
                 //TODO:_startControl.ui_buttonX_logon.Enabled = true;                
             }
             else
             {
                 _startControl.ui_labelX_CQGstatus.Text = @"CQG not started";
                 labelItemStatusCQG.Text = @"CQG not started";                
-                IsStartedCQG = false;
+                _isStartedCqg = false;
                 //TODO:_startControl.ui_buttonX_logon.Enabled = false;
             }
             Refresh();
@@ -1413,20 +1404,15 @@ namespace DataNetClient.Forms
             {
                 metroTabItem2.Visible = true;
                 metroTabItem3.Visible = true;
-                RefreshSymbols();
-                if(_client.AllowedSymbolGroups.Count !=0)
-                RefreshGroups();
-                else
-                {
-                    checkedListBoxLists.Items.Clear();
-                }
+                metroShell1.SelectedTab = metroTabItem2;
+                RefreshSymbols();                
+                RefreshGroups();                
             }
             else
             {
                 metroTabItem2.Visible = false;
                 metroTabItem3.Visible = false;
-            }
-RefreshGroups();
+            }            
         }
 
         private void RefreshGroups( )
@@ -1456,7 +1442,7 @@ RefreshGroups();
             listBoxSymbols.Items.Clear();
             listBoxTablesName.Items.Clear();
 
-            _symbols = ClientDataManager.GetSymbols();
+            _symbols = ClientDataManager.GetSymbols(_client.UserID);
             foreach (var item in _symbols)
             {
                 listBoxSymbols.Items.Add(item.SymbolName);
@@ -1466,8 +1452,9 @@ RefreshGroups();
 
         private void metroShell1_LogOutButtonClick(object sender, EventArgs e)
         {
+            //_client.Logout();
             //TODO: call LogOut function
-            _startControl.IsOpen = true;
+            //_startControl.Show();            
         }
 
         #region COLLECT DATA TAB
