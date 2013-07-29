@@ -1160,23 +1160,29 @@ namespace DataNetClient.Forms
                 {
                     //bool useTimeRange;
                     //collectSyncMutex.WaitOne();
-                    object name = listName;
+                    var name = (string)listName;
                     Invoke((Action)delegate
-                    {
+                                       {
+                                           var group = _groups.Find(a => a.GroupName == name);
+                        
                         //***********
-                        TimeRange tr = new TimeRange{StartTime = DateTime.Today};//ClientDataManager.GetGroups(_client.UserID, )//customeListsDict[name.ToString()];
-
-                        if (!tr.StartTime.Equals(DateTime.Today))
-                        {
-                            //useTimeRange = true;
+                                           var tr = new TimeRange
+                                           {
+                                               StartTime = group.Start,
+                                               EndTime = group.End,
+                                               StrContinuationType = group.CntType,
+                                               StrTF_Tyoe = group.TimeFrame
+                                           };//ClientDataManager.GetGroups(_client.UserID, )//customeListsDict[name.ToString()];
+                                           
+                        if (!tr.StartTime.Equals(new DateTime()))
+                        {                            
                             _startTime = tr.StartTime;
                             _endTime = tr.EndTime;
 
                             dateTimeInputStart.Value = _startTime;
                             dateTimeInputEnd.Value = _endTime;
-
                         }
-                        /*
+                        
                         eHistoricalPeriod res;
                         if (Enum.TryParse(tr.StrTF_Tyoe, out res))
                             cmbHistoricalPeriod.SelectedItem = res;
@@ -1188,14 +1194,12 @@ namespace DataNetClient.Forms
                         if (Enum.TryParse(tr.StrContinuationType, out res1))
                         {
                             cmbContinuationType.SelectedItem = res1;
-                        }
-                         * */
+                        }                         
                         //***********
 
-                        List<String> symbolList = new List<string>();
-                        //TODO: = dbSel.load_cmList(name.ToString(), listBoxSymbols);
+                        var symbolModelList = ClientDataManager.GetSymbolsInGroup(_groups.Find(a=>a.GroupName == name).GroupId);
 
-                        AllSymbols.AddRange(symbolList);
+                        AllSymbols.AddRange(symbolModelList.Select(s => s.SymbolName));
                         for (int i = 0; i < listBoxSymbols.Items.Count; i++)
                         {
                             listBoxSymbols.SetSelected(i, true);
@@ -1212,16 +1216,13 @@ namespace DataNetClient.Forms
 
                         Invoke((Action)delegate
                         {
-                            Thread.Sleep(1000);
-                            // TODO: dbSel.LoadSymbolList(listBoxSymbols);
-
+                            Thread.Sleep(1000);                            
                             if (checkBoxAutoCheckForMissedBars.Value)
                                 _dataCollector.MissingBarRequest(_cel, AllSymbols.ToArray(), (int)nudEndBar.Value);
 
                             //dataCollector.ResetSymbols();
                         });
                     }
-
                 }
             });
 
@@ -1313,7 +1314,7 @@ namespace DataNetClient.Forms
 
         #endregion
 
-        #region
+        #region UI context menus
 
         //**
         private void CancelNewListExecuted(object sender, EventArgs e)
@@ -1456,11 +1457,6 @@ namespace DataNetClient.Forms
             //TODO: call LogOut function
             //_startControl.Show();            
         }
-
-        #region COLLECT DATA TAB
-
-
-        #endregion
 
 
 

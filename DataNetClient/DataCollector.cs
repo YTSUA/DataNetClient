@@ -657,17 +657,17 @@ namespace DataNetClient
                             List<MissedStr> aMissedList = new List<MissedStr>();
                             // FINDING MISSED BARS in current day
                             
-                            aMissedList = MissedInTable(currentSymbol, aResultDateTimes, MissDateTimeStart, MissDateTimeEnd, DayStartsYesterday);
+                            aMissedList = MissedInTable(currentSymbol, aResultDateTimes, MissDateTimeStart, MissDateTimeEnd, DayStartsYesterday,State == SessionStates.OpenedHoliday);
                          
 
 
                             foreach (MissedStr item in aMissedList)
                             {
-                                State = SessionStates.Missed;
+                                State = State == SessionStates.OpenedHoliday ? SessionStates.ClosedHoliday : SessionStates.Missed;
 
                                 LVitem = new ListViewItem();
                                 LVitem.Group = LVgroup;
-                                LVitem.ForeColor = Color.DarkRed;
+                                LVitem.ForeColor = State == SessionStates.ClosedHoliday ? LVitem.ForeColor = Color.MediumSeaGreen : LVitem.ForeColor = Color.DarkRed;
                                 LVitem.Text = item.Start.ToShortDateString();                                                    // Date                                
                                 LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, State.ToString()));            // state
                                 //LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, item.start.DayOfWeek.ToString()));  // Day
@@ -915,17 +915,17 @@ namespace DataNetClient
                             List<MissedStr> aMissedList = new List<MissedStr>();
                             // FINDING MISSED BARS in current day
 
-                            aMissedList = MissedInTable(currentSymbol, aResultDateTimes, MissDateTimeStart, MissDateTimeEnd, DayStartsYesterday);
+                            aMissedList = MissedInTable(currentSymbol, aResultDateTimes, MissDateTimeStart, MissDateTimeEnd, DayStartsYesterday, State == SessionStates.OpenedHoliday);
 
 
 
                             foreach (MissedStr item in aMissedList)
                             {
-                                State = SessionStates.Missed;
+                                State = State == SessionStates.OpenedHoliday ? SessionStates.ClosedHoliday : SessionStates.Missed;
 
                                 LVitem = new ListViewItem();
                                 LVitem.Group = LVgroup;
-                                LVitem.ForeColor = Color.DarkRed;
+                                LVitem.ForeColor = State == SessionStates.ClosedHoliday ? LVitem.ForeColor = Color.MediumSeaGreen : LVitem.ForeColor = Color.DarkRed;
                                 LVitem.Text = item.Start.ToShortDateString();                                                    // Date                                
                                 LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, State.ToString()));            // state
                                 //LVitem.SubItems.Add(new ListViewItem.ListViewSubItem(LVitem, item.start.DayOfWeek.ToString()));  // Day
@@ -977,9 +977,9 @@ namespace DataNetClient
             // todo of all
         }
 
-        private List<MissedStr> MissedInTable(string smb, List<DateTime> aResultDateTimes, DateTime MissDateTimeStart, DateTime MissDateTimeEnd, bool DayStartsYesterday)
+        private List<MissedStr> MissedInTable(string smb, List<DateTime> aResultDateTimes, DateTime MissDateTimeStart, DateTime MissDateTimeEnd, bool DayStartsYesterday, bool SkipAddingToDb = false)
         {
-            
+
             List<MissedStr> resultList = new List<MissedStr>();
             List<DateTime> missingList = new List<DateTime>();
             DateTime refresh = DateTime.Now;
@@ -991,15 +991,16 @@ namespace DataNetClient
                 // not exsists and its after first
                 if (!ExistsTime(aResultDateTimes, curTime) && curTime > aResultDateTimes[0])
                 {
-                    
+
+                    if (!SkipAddingToDb)
                         ClientDataManager.AddToMissingTableWithOutCommit(smb, refresh, curTime);
-                    
+
                     missingList.Add(curTime);
                 }
             }
 
             ClientDataManager.CommitQueue();
-            
+
             if (missingList.Count == 1)
             {
                 resultList.Add(new MissedStr { Start = missingList[0], End = missingList[0] });

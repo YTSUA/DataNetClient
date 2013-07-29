@@ -479,9 +479,9 @@ namespace DataNetClient.Forms
             this.checkedListBoxLists.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.checkedListBoxLists.ForeColor = System.Drawing.Color.Black;
             this.checkedListBoxLists.FormattingEnabled = true;
-            this.checkedListBoxLists.Location = new System.Drawing.Point(10, 51);
+            this.checkedListBoxLists.Location = new System.Drawing.Point(10, 34);
             this.checkedListBoxLists.Name = "checkedListBoxLists";
-            this.checkedListBoxLists.Size = new System.Drawing.Size(193, 323);
+            this.checkedListBoxLists.Size = new System.Drawing.Size(193, 340);
             this.checkedListBoxLists.TabIndex = 22;
             this.checkedListBoxLists.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listBoxLists_MouseDown);
             this.checkedListBoxLists.MouseMove += new System.Windows.Forms.MouseEventHandler(this.listBoxSymbols_MouseMove);
@@ -1052,10 +1052,10 @@ namespace DataNetClient.Forms
             this.listBoxSymbols.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
             this.listBoxSymbols.ForeColor = System.Drawing.Color.Black;
             this.listBoxSymbols.FormattingEnabled = true;
-            this.listBoxSymbols.Location = new System.Drawing.Point(10, 51);
+            this.listBoxSymbols.Location = new System.Drawing.Point(10, 38);
             this.listBoxSymbols.Name = "listBoxSymbols";
             this.listBoxSymbols.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.listBoxSymbols.Size = new System.Drawing.Size(195, 325);
+            this.listBoxSymbols.Size = new System.Drawing.Size(195, 338);
             this.listBoxSymbols.TabIndex = 21;
             this.listBoxSymbols.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listBox1_DrawItem);
             this.listBoxSymbols.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listBoxSymbols_MouseDown);

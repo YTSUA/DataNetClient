@@ -218,11 +218,101 @@ namespace DataNetClient
         public static bool DeleteSymbolFromGroup(int groupId, int symbolId)
         {
             var sql = "DELETE FROM `" + TblSymbolsInGroups + "` WHERE `GroupID`='" + groupId + "' AND `SymbolID` = '" + symbolId + "';COMMIT;";
+            return DoSql(sql);
+        }
+
+        #endregion
+
+        #region USERS AND GROUPS RELATIONS
+
+        public static bool AddGroupForUser(int userId, GroupModel group)
+        {
+            string startDateStr = Convert.ToDateTime(group.Start).ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
+            string endDateStr = Convert.ToDateTime(group.End).ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
+
+            var sql = "INSERT IGNORE INTO " + TblGroupsForUsers
+                    + " (`UserID`, `GroupID`, `GroupName`, `TimeFrame`, `Start`, `End`, `CntType`)"
+                    + "VALUES('" + userId + "',"
+                    + " '" + group.GroupId + "',"
+                    + " '" + group.GroupName + "',"
+                    + " '" + group.TimeFrame + "',"
+                    + " '" + startDateStr + "',"
+                    + " '" + endDateStr + "',"
+                    + " '" + group.CntType + "');COMMIT;";
+
+            return DoSql(sql);
+        }
+
+        public static List<GroupModel> GetGroupsForUser(int userId)
+        {
+            var groupList = new List<GroupModel>();
+
+            string sql = "SELECT * FROM " + TblGroupsForUsers + " WHERE UserID = '" + userId + "' ; COMMIT;";
+            var reader = GetReader(sql);
+            if (reader != null)
+            {
+                while (reader.Read())
+                {
+                    var symbol = new GroupModel();
+                    symbol.GroupId = reader.GetInt32(2);
+                    symbol.GroupName = reader.GetString(3);
+                    symbol.TimeFrame = reader.GetString(4);
+                    symbol.Start = reader.GetDateTime(5);
+                    symbol.End = reader.GetDateTime(6);
+                    symbol.CntType = reader.GetString(7);
+                    groupList.Add(symbol);
+                }
+                reader.Close();
+            }
+            return groupList;
+        }
+
+        public static List<UserModel> GetUsersForGroup(int groupId)
+        {
+            var userList = new List<UserModel>();
+
+            string sql = "SELECT * FROM " + TblGroupsForUsers
+                + " LEFT JOIN " + TblUsers
+                + " ON " + TblGroupsForUsers + ".UserID = "
+                + TblUsers + ".ID" + " WHERE GroupID = '" + groupId + "' ; COMMIT;";
+            var reader = GetReader(sql);
+            if (reader != null)
+            {
+                while (reader.Read())
+                {
+                    var user = new UserModel
+                    {
+                        Name = reader.GetString(9),
+                        Password = reader.GetString(10),
+                        FullName = reader.GetString(11),
+                        Email = reader.GetString(12),
+                        Phone = reader.GetString(13),
+                        IpAdress = reader.GetString(14),
+                        Blocked = reader.GetBoolean(15),
+                        AllowDataNet = reader.GetBoolean(16),
+                        AllowTickNet = reader.GetBoolean(17),
+                        AllowLocalDb = reader.GetBoolean(18),
+                        AllowRemoteDb = reader.GetBoolean(19),
+                        AllowAnyIp = reader.GetBoolean(20),
+                        AllowMissBars = reader.GetBoolean(21),
+                        AllowCollectFrCqg = reader.GetBoolean(22),
+                    };
+                    userList.Add(user);
+                }
+                reader.Close();
+            }
+            return userList;
+        }
+
+        public static bool DeleteGroupForUser(int userId, int groupId)
+        {
+            var sql = "DELETE FROM `" + TblGroupsForUsers + "` WHERE `UserID`='" + userId + "' AND `GroupID` = '" + groupId + "';COMMIT;";
 
             return DoSql(sql);
         }
 
         #endregion
+
 
         #region MAIN FUNCTIONS (Connect, IsOpen, DoSql, GetReader, AddToQueue)
 
